@@ -41,7 +41,7 @@ public class CrawlerService {
 
             for (int i = 0; i < novelLinks.size(); i++) {
                 Element novelLink = novelLinks.get(i);
-                String novelUrl = novelLink.attr("href");
+                URL novelUrl = new URL(novelLink.attr("href"));
                 String novelTitle = novelLink.text();
                 L.info("novel: url={}, title={}", novelUrl, novelTitle);
 
@@ -59,8 +59,8 @@ public class CrawlerService {
         }
     }
 
-    private void saveNovelIndex(String url) {
-        String hash = DigestUtils.sha256Hex(url);
+    private void saveNovelIndex(URL url) {
+        String hash = DigestUtils.sha256Hex(url.toString());
 
         NovelIndex novelIndex = this.repo.findOne(hash);
         if (novelIndex != null) {

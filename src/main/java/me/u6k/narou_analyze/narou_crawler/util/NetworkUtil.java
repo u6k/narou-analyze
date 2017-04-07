@@ -12,13 +12,19 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class NetworkUtil {
+
+    private static final Logger L = LoggerFactory.getLogger(NetworkUtil.class);
 
     private NetworkUtil() {
     }
 
     public static String get(URL url) {
+        L.debug("#get: url={}", url);
+
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             Thread.sleep(10000);
 
@@ -30,7 +36,6 @@ public final class NetworkUtil {
                 }
 
                 byte[] responseData = EntityUtils.toByteArray(response.getEntity());
-
                 String html = new String(responseData, StandardCharsets.UTF_8);
 
                 return html;

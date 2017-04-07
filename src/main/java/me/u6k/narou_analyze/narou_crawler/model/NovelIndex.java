@@ -1,6 +1,8 @@
 
 package me.u6k.narou_analyze.narou_crawler.model;
 
+import java.net.URL;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -17,7 +19,7 @@ public class NovelIndex {
     private String id;
 
     @Column(name = "url", length = 2000, nullable = false)
-    private String url;
+    private URL url;
 
     public String getId() {
         return id;
@@ -27,11 +29,11 @@ public class NovelIndex {
         this.id = id;
     }
 
-    public String getUrl() {
+    public URL getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(URL url) {
         this.url = url;
     }
 
