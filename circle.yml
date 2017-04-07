@@ -1,0 +1,29 @@
+machine:
+    timezone: Asia/Tokyo
+    services:
+        - docker
+
+compile:
+    pre:
+        - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+        - docker pull u6kapps/narou-crawler-dev || true
+    override:
+        - docker build -t u6kapps/narou-crawler-dev -f Dockerfile-dev .
+    post:
+        - docker push u6kapps/narou-crawler-dev
+
+test:
+    override:
+        - docker run -d --name narou-crawler-db -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_DATABASE=narou_crawler -e MYSQL_USER=narou_crawler_user -e MYSQL_PASSWORD=$MYSQL_PASSWORD mysql
+        - docker run --rm -v $HOME/.m2:/root/.m2 -v $(pwd):/var/my-app --link narou-crawler-db:db u6kapps/narou-crawler-dev
+    post:
+        - cp -r target/surefire-reports/* $CIRCLE_TEST_REPORTS/
+        - cp -r target/* $CIRCLE_ARTIFACTS/
+
+deployment:
+    release:
+        tag: /.+/
+        commands:
+            - docker build -t u6kapps/narou-crawler .
+            - docker tag u6kapps/narou-crawler u6kapps/narou-crawler:$CIRCLE_TAG
+            - docker push u6kapps/narou-crawler
