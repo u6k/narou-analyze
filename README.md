@@ -54,17 +54,16 @@ docker run \
 
 ### 開発環境でアプリケーションを実行
 
-MySQLコンテナを起動します。
+PostgreSQLコンテナを起動します。
 
 ```
 docker run \
     -d \
     --name narou-crawler-db \
-    -e MYSQL_ROOT_PASSWORD=root_pass \
-    -e MYSQL_DATABASE=narou_crawler \
-    -e MYSQL_USER=narou_crawler_user \
-    -e MYSQL_PASSWORD=narou_crawler_pass \
-    mysql
+    -e POSTGRES_PASSWORD=db_pass \
+    -e POSTGRES_USER=db_user \
+    -e POSTGRES_DB=narou_crawler \
+    postgres
 ```
 
 開発用コンテナを起動します。
@@ -108,12 +107,11 @@ MySQLコンテナを起動します。本番環境なので、パスワードは
 docker run \
     -d \
     --name narou-crawler-db \
-    -e MYSQL_ROOT_PASSWORD=root_pass \
-    -e MYSQL_DATABASE=narou_crawler \
-    -e MYSQL_USER=narou_crawler_user \
-    -e MYSQL_PASSWORD=narou_crawler_pass \
-    -v $HOME/docker-volumes/narou-crawler/db:/var/lib/mysql \
-    mysql
+    -e POSTGRES_PASSWORD=db_pass \
+    -e POSTGRES_USER=db_user \
+    -e POSTGRES_DB=narou_crawler \
+    -v $HOME/docker-volumes/narou-crawler/db:/var/lib/postgresql/data \
+    postgres
 ```
 
 実行用コンテナを起動します。
