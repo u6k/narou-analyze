@@ -1,62 +1,76 @@
 
 package me.u6k.narou_analyze.narou_crawler;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import me.u6k.narou_analyze.narou_crawler.model.NovelIndex;
+import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
+import me.u6k.narou_analyze.narou_crawler.util.NetworkUtil;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class CrawlerService {
 
     private static final Logger L = LoggerFactory.getLogger(CrawlerService.class);
 
+    @Autowired
+    private NovelIndexRepository repo;
+
     public void indexingNovel(String searchPageUrl) {
-        try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpGet get = new HttpGet(searchPageUrl);
+        try {
+            URL url = new URL(searchPageUrl);
+            String html = NetworkUtil.get(url);
 
-            try (CloseableHttpResponse response = client.execute(get)) {
-                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-                    throw new RuntimeException("url=" + searchPageUrl + ", statusCode=" + response.getStatusLine().getStatusCode());
-                }
+            Document htmlDoc = Jsoup.parse(html);
 
-                byte[] responseData = EntityUtils.toByteArray(response.getEntity());
-
-                String html = new String(responseData, StandardCharsets.UTF_8);
-                L.info(html);
-
-                Document htmlDoc = Jsoup.parse(html);
-
-                Elements novelLinks = htmlDoc.select("div.novel_h a.tl");
-                for (int i = 0; i < novelLinks.size(); i++) {
-                    Element novelLink = novelLinks.get(i);
-                    String novelUrl = novelLink.attr("href");
-                    String novelTitle = novelLink.text();
-                    L.info("novel: url={}, title={}", novelUrl, novelTitle);
-                }
-
-                Elements nextLinks = htmlDoc.select("a.nextlink");
-                if (nextLinks.size() > 0) {
-                    Element nextLink = nextLinks.get(0);
-                    String nextUrl = nextLink.attr("href");
-                    L.info("next: url={}", "http://yomou.syosetu.com/search.php" + nextUrl);
-                }
+            Elements novelLinks = htmlDoc.select("div.novel_h a.tl");
+            if (novelLinks.size() == 0) {
+                throw new RuntimeException("novelLinks.size == 0");
             }
-        } catch (IOException e) {
+
+            for (int i = 0; i < novelLinks.size(); i++) {
+                Element novelLink = novelLinks.get(i);
+                URL novelUrl = new URL(novelLink.attr("href"));
+                String novelTitle = novelLink.text();
+                L.info("novel: url={}, title={}", novelUrl, novelTitle);
+
+                this.saveNovelIndex(novelUrl);
+            }
+
+            Elements nextLinks = htmlDoc.select("a.nextlink");
+            if (nextLinks.size() > 0) {
+                Element nextLink = nextLinks.get(0);
+                String nextUrl = nextLink.attr("href");
+                L.info("next: url={}", "http://yomou.syosetu.com/search.php" + nextUrl);
+            }
+        } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void saveNovelIndex(URL url) {
+        String hash = DigestUtils.sha256Hex(url.toString());
+
+        NovelIndex novelIndex = this.repo.findOne(hash);
+        if (novelIndex != null) {
+            return;
+        }
+
+        novelIndex = new NovelIndex();
+        novelIndex.setId(hash);
+        novelIndex.setUrl(url);
+        this.repo.save(novelIndex);
     }
 
 }

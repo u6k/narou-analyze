@@ -74,6 +74,9 @@ docker run \
     -v $HOME/.m2:/root/.m2 \
     -v $(pwd):/var/my-app \
     --link narou-crawler-db:db \
+    -e NAROU_CRAWLER_DB_USER=db_user \
+    -e NAROU_CRAWLER_DB_PASS=db_pass \
+    -e NAROU_CRAWLER_DB_NAME=narou_crawler \
     -p 8080:8080 \
     u6kapps/narou-crawler-dev mvn spring-boot:run
 ```
@@ -90,6 +93,9 @@ docker run \
     -v $HOME/.m2:/root/.m2 \
     -v $(pwd):/var/my-app \
     --link narou-crawler-db:db \
+    -e NAROU_CRAWLER_DB_USER=db_user \
+    -e NAROU_CRAWLER_DB_PASS=db_pass \
+    -e NAROU_CRAWLER_DB_NAME=narou_crawler \
     u6kapps/narou-crawler-dev
 ```
 
@@ -121,6 +127,9 @@ docker run \
     -d \
     --name narou-crawler \
     --link narou-crawler-db:db \
+    -e NAROU_CRAWLER_DB_USER=db_user \
+    -e NAROU_CRAWLER_DB_PASS=db_pass \
+    -e NAROU_CRAWLER_DB_NAME=narou_crawler \
     -p 8080:8080 \
     u6kapps/narou-crawler
 ```
