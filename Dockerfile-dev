@@ -1,0 +1,15 @@
+FROM openjdk:8-alpine
+MAINTAINER u6k.apps@gmail.com
+
+# Setup Apache Maven
+RUN apk update && \
+    apk add maven
+
+# Setup work directory
+VOLUME /var/my-app
+WORKDIR /var/my-app
+
+# Setup docker run setting
+EXPOSE 8080
+
+CMD ["mvn", "clean", "package"]
