@@ -18,7 +18,7 @@ test:
         - docker run -d --name narou-crawler-db -e POSTGRES_PASSWORD=$DB_PASS -e POSTGRES_USER=$DB_USER -e POSTGRES_DB=$DB_NAME postgres
         - docker run -d --name narou-crawler-mq webcenter/activemq
         # testing
-        - docker run --rm -v $HOME/.m2:/root/.m2 -v $(pwd):/var/my-app --link narou-crawler-db:db -e NAROU_CRAWLER_DB_USER=$DB_USER -e NAROU_CRAWLER_DB_PASS=$DB_PASS -e NAROU_CRAWLER_DB_NAME=$DB_NAME u6kapps/narou-crawler-dev
+        - docker run --rm -v $HOME/.m2:/root/.m2 -v $(pwd):/var/my-app --link narou-crawler-db:db --link narou-crawler-mq:mq -e NAROU_CRAWLER_DB_USER=$DB_USER -e NAROU_CRAWLER_DB_PASS=$DB_PASS -e NAROU_CRAWLER_DB_NAME=$DB_NAME u6kapps/narou-crawler-dev
         # after test
         - docker kill narou-crawler-mq
         - docker kill narou-crawler-db
