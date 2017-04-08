@@ -153,6 +153,11 @@ ActiveMQコンテナを起動します。
 docker run \
     -d \
     --name narou-crawler-mq \
+    -e ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT=true \
+    -e ACTIVEMQ_ADMIN_LOGIN=mq_user \
+    -e ACTIVEMQ_ADMIN_PASSWORD=mq_pass \
+    -e ACTIVEMQ_ENABLED_SCHEDULER=true \
+    -v $HOME/docker-volumes/narou-crawler/mq:/data/activemq \
     webcenter/activemq
 ```
 
