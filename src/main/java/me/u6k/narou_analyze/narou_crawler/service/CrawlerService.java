@@ -1,5 +1,5 @@
 
-package me.u6k.narou_analyze.narou_crawler;
+package me.u6k.narou_analyze.narou_crawler.service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,10 +27,9 @@ public class CrawlerService {
     @Autowired
     private NovelIndexRepository repo;
 
-    public void indexingNovel(String searchPageUrl) {
+    public URL indexingNovel(URL searchPageUrl) {
         try {
-            URL url = new URL(searchPageUrl);
-            String html = NetworkUtil.get(url);
+            String html = NetworkUtil.get(searchPageUrl);
 
             Document htmlDoc = Jsoup.parse(html);
 
@@ -48,12 +47,18 @@ public class CrawlerService {
                 this.saveNovelIndex(novelUrl);
             }
 
+            URL nextUrl;
+
             Elements nextLinks = htmlDoc.select("a.nextlink");
             if (nextLinks.size() > 0) {
                 Element nextLink = nextLinks.get(0);
-                String nextUrl = nextLink.attr("href");
-                L.info("next: url={}", "http://yomou.syosetu.com/search.php" + nextUrl);
+                nextUrl = new URL("http://yomou.syosetu.com/search.php" + nextLink.attr("href"));
+                L.info("next: url={}", nextUrl);
+            } else {
+                nextUrl = null;
             }
+
+            return nextUrl;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

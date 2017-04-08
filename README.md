@@ -29,8 +29,24 @@ Server:
 
 ## Usage
 
-- 検索ページから全小説のURLを取得
-- 小説のメタ・データ、内容を取得
+### 検索ページから全小説のURLを取得
+
+```
+curl -v \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -d '{"searchPageUrl":"http://yomou.syosetu.com/search.php?notnizi=1&word=&notword=&genre=&order=new&type=","limit":100000}' \
+    https://crawler.narou-analyze.u6k.me/api/indexingNovel
+```
+
+- searchPageUrl
+    - 「小説家になろう」検索画面のURL
+- limit
+    - 検索するページ数
+
+### 小説のメタ・データ、内容を取得
+
+TODO
 
 ## Installation
 
@@ -66,6 +82,15 @@ docker run \
     postgres
 ```
 
+ActiveMQコンテナを起動します。
+
+```
+docker run \
+    -d \
+    --name narou-crawler-mq \
+    webcenter/activemq
+```
+
 開発用コンテナを起動します。
 
 ```
@@ -74,6 +99,7 @@ docker run \
     -v $HOME/.m2:/root/.m2 \
     -v $(pwd):/var/my-app \
     --link narou-crawler-db:db \
+    --link narou-crawler-mq:mq \
     -e NAROU_CRAWLER_DB_USER=db_user \
     -e NAROU_CRAWLER_DB_PASS=db_pass \
     -e NAROU_CRAWLER_DB_NAME=narou_crawler \
@@ -83,7 +109,7 @@ docker run \
 
 ### 実行用Dockerイメージをビルド
 
-MySQLコンテナを起動します。コマンドは上記と同じ。
+PostgreSQLコンテナ、ActiveMQコンテナを起動します。コマンドは上記と同じ。
 
 jarファイルを作成します。
 
@@ -93,6 +119,7 @@ docker run \
     -v $HOME/.m2:/root/.m2 \
     -v $(pwd):/var/my-app \
     --link narou-crawler-db:db \
+    --link narou-crawler-mq:mq \
     -e NAROU_CRAWLER_DB_USER=db_user \
     -e NAROU_CRAWLER_DB_PASS=db_pass \
     -e NAROU_CRAWLER_DB_NAME=narou_crawler \
@@ -107,7 +134,7 @@ docker build -t u6kapps/narou-crawler .
 
 ### 実行
 
-MySQLコンテナを起動します。本番環境なので、パスワードは変更してください。
+PostgreSQLコンテナを起動します。本番環境なので、パスワードは変更してください。
 
 ```
 docker run \
@@ -120,6 +147,20 @@ docker run \
     postgres
 ```
 
+ActiveMQコンテナを起動します。
+
+```
+docker run \
+    -d \
+    --name narou-crawler-mq \
+    -e ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT=true \
+    -e ACTIVEMQ_ADMIN_LOGIN=mq_user \
+    -e ACTIVEMQ_ADMIN_PASSWORD=mq_pass \
+    -e ACTIVEMQ_ENABLED_SCHEDULER=true \
+    -v $HOME/docker-volumes/narou-crawler/mq:/data/activemq \
+    webcenter/activemq
+```
+
 実行用コンテナを起動します。
 
 ```
@@ -127,6 +168,7 @@ docker run \
     -d \
     --name narou-crawler \
     --link narou-crawler-db:db \
+    --link narou-crawler-mq:mq \
     -e NAROU_CRAWLER_DB_USER=db_user \
     -e NAROU_CRAWLER_DB_PASS=db_pass \
     -e NAROU_CRAWLER_DB_NAME=narou_crawler \
