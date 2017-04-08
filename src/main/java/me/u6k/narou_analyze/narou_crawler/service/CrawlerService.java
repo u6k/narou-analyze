@@ -53,7 +53,7 @@ public class CrawlerService {
             if (nextLinks.size() > 0) {
                 Element nextLink = nextLinks.get(0);
                 nextUrl = new URL("http://yomou.syosetu.com/search.php" + nextLink.attr("href"));
-                L.info("next: url={}", "http://yomou.syosetu.com/search.php" + nextUrl);
+                L.info("next: url={}", nextUrl);
             } else {
                 nextUrl = null;
             }
