@@ -1,5 +1,5 @@
 
-package me.u6k.narou_analyze.narou_crawler;
+package me.u6k.narou_analyze.narou_crawler.service;
 
 import java.net.MalformedURLException;
 import java.net.URL;

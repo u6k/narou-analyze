@@ -1,10 +1,11 @@
 
-package me.u6k.narou_analyze.narou_crawler;
+package me.u6k.narou_analyze.narou_crawler.service;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
+import me.u6k.narou_analyze.narou_crawler.service.CrawlerService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
