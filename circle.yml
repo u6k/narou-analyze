@@ -19,7 +19,7 @@ test:
         # testing
         - docker run --rm -v $HOME/.m2:/root/.m2 -v $(pwd):/var/my-app --link db:db -e NAROU_CRAWLER_DB_USER=$DB_USER -e NAROU_CRAWLER_DB_PASS=$DB_PASS -e NAROU_CRAWLER_DB_NAME=$DB_NAME -e NAROU_CRAWLER_DB_HOST=db u6kapps/narou-crawler-dev
         # after test
-        - docker kill narou-crawler-db
+        - docker kill db
     post:
         - cp -r target/surefire-reports/* $CIRCLE_TEST_REPORTS/
         - cp -r target/* $CIRCLE_ARTIFACTS/
