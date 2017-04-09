@@ -19,6 +19,8 @@ public final class NetworkUtil {
 
     private static final Logger L = LoggerFactory.getLogger(NetworkUtil.class);
 
+    private static final int INTERVAL = 2000;
+
     private NetworkUtil() {
     }
 
@@ -26,7 +28,7 @@ public final class NetworkUtil {
         L.debug("#get: url={}", url);
 
         try (CloseableHttpClient client = HttpClients.createDefault()) {
-            Thread.sleep(10000);
+            Thread.sleep(INTERVAL);
 
             HttpGet get = new HttpGet(url.toURI());
 

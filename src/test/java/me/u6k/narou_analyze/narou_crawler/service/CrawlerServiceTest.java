@@ -30,21 +30,30 @@ public class CrawlerServiceTest {
     }
 
     @Test
-    public void indexingNovel() throws Exception {
-        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?notnizi=1&word=&notword=&genre=&order=new&type=");
-        URL nextUrl = this.service.indexingNovel(searchPageUrl);
+    public void indexingNovel_0件でも正常動作() throws Exception {
+        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2004%2F04%2F01&maxlastup=2004%2F04%2F01&order=old&type=&genre=&word=&notword=");
+        long count = this.service.indexingNovel(searchPageUrl);
 
-        assertThat(this.repo.count(), is(20L));
-        assertThat(nextUrl, is(new URL("http://yomou.syosetu.com/search.php?&order=new&notnizi=1&p=2")));
+        assertThat(count, is(0L));
+        assertThat(this.repo.count(), is(count));
     }
 
     @Test
-    public void indexingNovel_複数回実行しても正常動作する() throws Exception {
-        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?notnizi=1&word=&notword=&genre=&order=new&type=");
-        this.service.indexingNovel(searchPageUrl);
-        this.service.indexingNovel(searchPageUrl);
+    public void indexingNovel_1ページでも正常動作() throws Exception {
+        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2004%2F04%2F01&maxlastup=2004%2F05%2F01&order=old&type=&genre=&word=&notword=");
+        long count = this.service.indexingNovel(searchPageUrl);
 
-        assertThat(this.repo.count(), greaterThan(0L));
+        assertThat(count, is(1L));
+        assertThat(this.repo.count(), is(count));
+    }
+
+    @Test
+    public void indexingNovel_複数ページでも正常動作() throws Exception {
+        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2014%2F04%2F01&maxlastup=2014%2F04%2F01&order=old&type=&genre=&word=&notword=");
+        long count = this.service.indexingNovel(searchPageUrl);
+
+        assertThat(count, greaterThan(200L));
+        assertThat(this.repo.count(), is(count));
     }
 
 }
