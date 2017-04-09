@@ -68,22 +68,22 @@ public class CrawlerControllerTest {
     }
 
     @Test
-    public void indexingNovel() throws Exception {
+    public void indexingNovel_複数ページでも正常動作() throws Exception {
         IndexingNovelParam param = new IndexingNovelParam();
-        param.setSearchPageUrl(new URL("http://yomou.syosetu.com/search.php?notnizi=1&word=&notword=&genre=&order=new&type="));
-        param.setLimit(3);
+        param.setSearchPageUrl(new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2014%2F04%2F01&maxlastup=2014%2F04%2F01&order=old&type=&genre=&word=&notword="));
+
         String json = this.buildJson(param);
 
-        ResultActions result = perform(mvc, post("/api/indexingNovel")
+        ResultActions result = perform(mvc, post("/api/novels/")
                         .contentType("application/json")
                         .content(json));
 
-        result.andExpect(status().isNoContent());
-        assertThat(this.repo.count(), is(0L));
+        long count = this.repo.count();
+        assertThat(count, greaterThan(200L));
 
-        Thread.sleep(60000);
-
-        assertThat(this.repo.count(), greaterThan(0L));
+        result.andExpect(status().isOk())
+                        .andExpect(content().contentType("application/json;charset=UTF-8"))
+                        .andExpect(jsonPath("$.count", is((int) count)));
     }
 
 }

@@ -27,55 +27,58 @@ public class CrawlerService {
     @Autowired
     private NovelIndexRepository repo;
 
-    public URL indexingNovel(URL searchPageUrl) {
+    public long indexingNovel(URL searchPageUrl) {
         try {
-            String html = NetworkUtil.get(searchPageUrl);
+            long count = 0;
 
-            Document htmlDoc = Jsoup.parse(html);
+            while (searchPageUrl != null) {
+                String html = NetworkUtil.get(searchPageUrl);
 
-            Elements novelLinks = htmlDoc.select("div.novel_h a.tl");
-            if (novelLinks.size() == 0) {
-                throw new RuntimeException("novelLinks.size == 0");
+                Document htmlDoc = Jsoup.parse(html);
+
+                Elements novelLinks = htmlDoc.select("div.novel_h a.tl");
+                for (int i = 0; i < novelLinks.size(); i++) {
+                    Element novelLink = novelLinks.get(i);
+                    URL novelUrl = new URL(novelLink.attr("href"));
+                    String novelTitle = novelLink.text();
+                    L.info("novel: url={}, title={}", novelUrl, novelTitle);
+
+                    boolean saveResult = this.saveNovelIndex(novelUrl);
+                    if (saveResult) {
+                        count++;
+                    }
+                }
+
+                Elements nextLinks = htmlDoc.select("a.nextlink");
+                if (nextLinks.size() > 0) {
+                    Element nextLink = nextLinks.get(0);
+                    searchPageUrl = new URL("http://yomou.syosetu.com/search.php" + nextLink.attr("href"));
+                    L.info("next: url={}", searchPageUrl);
+                } else {
+                    searchPageUrl = null;
+                }
             }
 
-            for (int i = 0; i < novelLinks.size(); i++) {
-                Element novelLink = novelLinks.get(i);
-                URL novelUrl = new URL(novelLink.attr("href"));
-                String novelTitle = novelLink.text();
-                L.info("novel: url={}, title={}", novelUrl, novelTitle);
-
-                this.saveNovelIndex(novelUrl);
-            }
-
-            URL nextUrl;
-
-            Elements nextLinks = htmlDoc.select("a.nextlink");
-            if (nextLinks.size() > 0) {
-                Element nextLink = nextLinks.get(0);
-                nextUrl = new URL("http://yomou.syosetu.com/search.php" + nextLink.attr("href"));
-                L.info("next: url={}", nextUrl);
-            } else {
-                nextUrl = null;
-            }
-
-            return nextUrl;
+            return count;
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void saveNovelIndex(URL url) {
+    private boolean saveNovelIndex(URL url) {
         String hash = DigestUtils.sha256Hex(url.toString());
 
         NovelIndex novelIndex = this.repo.findOne(hash);
         if (novelIndex != null) {
-            return;
+            return false;
         }
 
         novelIndex = new NovelIndex();
         novelIndex.setId(hash);
         novelIndex.setUrl(url);
         this.repo.save(novelIndex);
+
+        return true;
     }
 
 }
