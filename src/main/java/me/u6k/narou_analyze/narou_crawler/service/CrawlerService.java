@@ -3,11 +3,13 @@ package me.u6k.narou_analyze.narou_crawler.service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndex;
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
 import me.u6k.narou_analyze.narou_crawler.util.NetworkUtil;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -41,9 +43,9 @@ public class CrawlerService {
                     Element novelLink = novelLinks.get(i);
                     URL novelUrl = new URL(novelLink.attr("href"));
                     String novelTitle = novelLink.text();
-                    L.info("novel: url={}, title={}", novelUrl, novelTitle);
+                    L.debug("novel: url={}, title={}", novelUrl, novelTitle);
 
-                    boolean saveResult = this.saveNovelIndex(novelUrl);
+                    boolean saveResult = this.saveNovelIndex(novelUrl, novelTitle, new Date(0L));
                     if (saveResult) {
                         count++;
                     }
@@ -53,7 +55,7 @@ public class CrawlerService {
                 if (nextLinks.size() > 0) {
                     Element nextLink = nextLinks.get(0);
                     searchPageUrl = new URL("http://yomou.syosetu.com/search.php" + nextLink.attr("href"));
-                    L.info("next: url={}", searchPageUrl);
+                    L.debug("next: url={}", searchPageUrl);
                 } else {
                     searchPageUrl = null;
                 }
@@ -65,18 +67,31 @@ public class CrawlerService {
         }
     }
 
-    private boolean saveNovelIndex(URL url) {
-        String hash = DigestUtils.sha256Hex(url.toString());
+    public String extractNCode(URL url) {
+        Pattern p = Pattern.compile("^http:\\/\\/ncode\\.syosetu\\.com\\/(\\w+)\\/$");
+        Matcher m = p.matcher(url.toString());
+        if (!m.matches()) {
+            throw new RuntimeException("url not match novel url. url=" + url.toString());
+        }
 
-        NovelIndex novelIndex = this.repo.findOne(hash);
-        if (novelIndex != null) {
+        String ncode = m.group(1);
+
+        return ncode;
+    }
+
+    private boolean saveNovelIndex(URL url, String title, Date searchDate) {
+        String ncode = this.extractNCode(url);
+
+        if (this.repo.findOne(ncode) != null) {
             return false;
         }
 
-        novelIndex = new NovelIndex();
-        novelIndex.setId(hash);
-        novelIndex.setUrl(url);
-        this.repo.save(novelIndex);
+        NovelIndex index = new NovelIndex();
+        index.setNcode(ncode);
+        index.setTitle(title);
+        index.setSearchDate(searchDate);
+
+        this.repo.save(index);
 
         return true;
     }
