@@ -1,8 +1,6 @@
 
 package me.u6k.narou_analyze.narou_crawler.controller;
 
-import java.net.URL;
-
 import me.u6k.narou_analyze.narou_crawler.service.CrawlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +27,7 @@ public class CrawlerController {
     public IndexingNovelResult indexingNovel(@RequestBody IndexingNovelParam param) {
         L.debug("#indexingNovel: param={}", param);
 
-        URL searchPageUrl = param.getSearchPageUrl();
-        long count = this.service.indexingNovel(searchPageUrl);
+        long count = this.service.indexingNovel(param.getSearchDate());
 
         IndexingNovelResult result = new IndexingNovelResult();
         result.setCount(count);
