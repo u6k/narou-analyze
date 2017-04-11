@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
 import org.junit.Before;
@@ -30,30 +32,47 @@ public class CrawlerServiceTest {
     }
 
     @Test
+    public void extractNCode() throws Exception {
+        URL url = new URL("http://ncode.syosetu.com/n4830bu/");
+        String ncode = this.service.extractNCode(url);
+
+        assertThat(ncode, is("n4830bu"));
+    }
+
+    @Test
+    public void buildSearchPageUrl() throws Exception {
+        Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2010-01-01");
+        URL searchPageUrl = this.service.buildSearchPageUrl(searchDate);
+
+        URL expectedUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2010%2F01%2F01&maxlastup=2010%2F01%2F01&order=old&type=&genre=&word=&notword=");
+
+        assertThat(searchPageUrl, is(expectedUrl));
+    }
+
+    @Test
     public void indexingNovel_0件でも正常動作() throws Exception {
-        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2004%2F04%2F01&maxlastup=2004%2F04%2F01&order=old&type=&genre=&word=&notword=");
-        long count = this.service.indexingNovel(searchPageUrl);
+        Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2004-04-01");
+        long count = this.service.indexingNovel(searchDate);
 
         assertThat(count, is(0L));
         assertThat(this.repo.count(), is(count));
     }
 
     @Test
-    public void indexingNovel_1ページでも正常動作() throws Exception {
-        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2004%2F04%2F01&maxlastup=2004%2F05%2F01&order=old&type=&genre=&word=&notword=");
-        long count = this.service.indexingNovel(searchPageUrl);
+    public void indexingNovel_複数ページでも正常動作() throws Exception {
+        Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2010-01-01");
+        long count = this.service.indexingNovel(searchDate);
 
-        assertThat(count, is(1L));
+        assertThat(count, greaterThan(21L));
         assertThat(this.repo.count(), is(count));
     }
 
     @Test
-    public void indexingNovel_複数ページでも正常動作() throws Exception {
-        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2014%2F04%2F01&maxlastup=2014%2F04%2F01&order=old&type=&genre=&word=&notword=");
-        long count = this.service.indexingNovel(searchPageUrl);
-
-        assertThat(count, greaterThan(200L));
-        assertThat(this.repo.count(), is(count));
+    public void indexingNovel_複数回実行しても正常動作() throws Exception {
+        for (int i = 0; i < 3; i++) {
+            Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2010-01-01");
+            this.service.indexingNovel(searchDate);
+        }
     }
 
 }

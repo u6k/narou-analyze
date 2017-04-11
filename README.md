@@ -35,7 +35,7 @@ Server:
 curl -v \
     -X POST \
     -H "Content-Type: application/json" \
-    -d '{"searchPageUrl":"http://yomou.syosetu.com/search.php?notnizi=1&word=&notword=&genre=&order=new&type="}' \
+    -d '{"searchDate":"2017-04-10"}' \
     https://crawler.narou-analyze.u6k.me/api/novels/
 ```
 

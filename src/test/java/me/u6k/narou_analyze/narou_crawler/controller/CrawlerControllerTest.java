@@ -6,11 +6,6 @@ import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.net.URL;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,15 +44,6 @@ public class CrawlerControllerTest {
         this.mvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
 
-    private String buildJson(Object obj) throws JsonProcessingException {
-        String json = new ObjectMapper()
-                        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                        .writeValueAsString(obj);
-        L.debug("request: json={}", json);
-
-        return json;
-    }
-
     private ResultActions perform(MockMvc mvc, RequestBuilder request) throws Exception {
         ResultActions result = mvc.perform(request);
 
@@ -69,17 +55,15 @@ public class CrawlerControllerTest {
 
     @Test
     public void indexingNovel_複数ページでも正常動作() throws Exception {
-        IndexingNovelParam param = new IndexingNovelParam();
-        param.setSearchPageUrl(new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2014%2F04%2F01&maxlastup=2014%2F04%2F01&order=old&type=&genre=&word=&notword="));
-
-        String json = this.buildJson(param);
+        String json = "{\"searchDate\":\"2010-01-01\"}";
+        L.debug("request: json={}", json);
 
         ResultActions result = perform(mvc, post("/api/novels/")
                         .contentType("application/json")
                         .content(json));
 
         long count = this.repo.count();
-        assertThat(count, greaterThan(200L));
+        assertThat(count, greaterThan(21L));
 
         result.andExpect(status().isOk())
                         .andExpect(content().contentType("application/json;charset=UTF-8"))

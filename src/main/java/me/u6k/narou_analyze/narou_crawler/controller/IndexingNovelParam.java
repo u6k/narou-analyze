@@ -1,18 +1,25 @@
 
 package me.u6k.narou_analyze.narou_crawler.controller;
 
-import java.net.URL;
+import java.util.Date;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class IndexingNovelParam {
 
-    private URL searchPageUrl;
+    private Date searchDate;
 
-    public URL getSearchPageUrl() {
-        return searchPageUrl;
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
-    public void setSearchPageUrl(URL searchPageUrl) {
-        this.searchPageUrl = searchPageUrl;
+    public Date getSearchDate() {
+        return searchDate;
+    }
+
+    public void setSearchDate(Date searchDate) {
+        this.searchDate = searchDate;
     }
 
 }
