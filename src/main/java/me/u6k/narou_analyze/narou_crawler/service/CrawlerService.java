@@ -3,6 +3,7 @@ package me.u6k.narou_analyze.narou_crawler.service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,10 +30,11 @@ public class CrawlerService {
     @Autowired
     private NovelIndexRepository repo;
 
-    public long indexingNovel(URL searchPageUrl) {
+    public long indexingNovel(Date searchDate) {
         try {
             long count = 0;
 
+            URL searchPageUrl = this.buildSearchPageUrl(searchDate);
             while (searchPageUrl != null) {
                 String html = NetworkUtil.get(searchPageUrl);
 
@@ -45,7 +47,7 @@ public class CrawlerService {
                     String novelTitle = novelLink.text();
                     L.debug("novel: url={}, title={}", novelUrl, novelTitle);
 
-                    boolean saveResult = this.saveNovelIndex(novelUrl, novelTitle, new Date(0L));
+                    boolean saveResult = this.saveNovelIndex(novelUrl, novelTitle, searchDate);
                     if (saveResult) {
                         count++;
                     }
@@ -65,6 +67,20 @@ public class CrawlerService {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public URL buildSearchPageUrl(Date searchDate) throws MalformedURLException {
+        SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
+        SimpleDateFormat monthFormatter = new SimpleDateFormat("MM");
+        SimpleDateFormat dayFormatter = new SimpleDateFormat("dd");
+
+        URL searchPageUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup="
+                        + yearFormatter.format(searchDate) + "%2F" + monthFormatter.format(searchDate) + "%2F" + dayFormatter.format(searchDate)
+                        + "&maxlastup="
+                        + yearFormatter.format(searchDate) + "%2F" + monthFormatter.format(searchDate) + "%2F" + dayFormatter.format(searchDate)
+                        + "&order=old&type=&genre=&word=&notword=");
+
+        return searchPageUrl;
     }
 
     public String extractNCode(URL url) {
