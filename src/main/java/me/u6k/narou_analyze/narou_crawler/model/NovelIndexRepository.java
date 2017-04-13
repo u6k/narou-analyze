@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface NovelIndexRepository extends JpaRepository<NovelIndex, String> {
 
-    @Query("select idx from NovelIndex where idx.searchDate = :searchDate")
+    @Query("select idx from NovelIndex idx where idx.searchDate = :searchDate")
     List<NovelIndex> findBySearchDate(Date searchDate);
 
 }
