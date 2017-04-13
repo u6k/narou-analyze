@@ -19,7 +19,7 @@ public final class NetworkUtil {
 
     private static final Logger L = LoggerFactory.getLogger(NetworkUtil.class);
 
-    private static final int INTERVAL = 2000;
+    private static final int INTERVAL = 1000;
 
     private NetworkUtil() {
     }
