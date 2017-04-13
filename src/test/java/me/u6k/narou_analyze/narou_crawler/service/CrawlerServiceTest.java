@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMeta;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,11 +26,15 @@ public class CrawlerServiceTest {
     private CrawlerService service;
 
     @Autowired
-    private NovelIndexRepository repo;
+    private NovelIndexRepository indexRepo;
+
+    @Autowired
+    private NovelMetaRepository metaRepo;
 
     @Before
     public void setup() {
-        this.repo.deleteAllInBatch();
+        this.indexRepo.deleteAllInBatch();
+        this.metaRepo.deleteAllInBatch();
     }
 
     @Test
@@ -55,7 +61,7 @@ public class CrawlerServiceTest {
         long count = this.service.indexingNovel(searchDate);
 
         assertThat(count, is(0L));
-        assertThat(this.repo.count(), is(count));
+        assertThat(this.indexRepo.count(), is(count));
     }
 
     @Test
@@ -64,7 +70,7 @@ public class CrawlerServiceTest {
         long count = this.service.indexingNovel(searchDate);
 
         assertThat(count, greaterThan(21L));
-        assertThat(this.repo.count(), is(count));
+        assertThat(this.indexRepo.count(), is(count));
     }
 
     @Test
@@ -72,6 +78,40 @@ public class CrawlerServiceTest {
         for (int i = 0; i < 3; i++) {
             Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2010-01-01");
             this.service.indexingNovel(searchDate);
+        }
+    }
+
+    @Test
+    public void getNovelMeta_本好きの下剋上を取得() {
+        String ncode = "n4830bu";
+
+        this.service.getNovelMeta(ncode);
+
+        NovelMeta meta = this.metaRepo.findOne(ncode);
+
+        assertNotNull(meta);
+        assertThat(meta.getNcode(), is("n4830bu"));
+        assertNotNull(meta.getUpdated());
+    }
+
+    @Test
+    public void getNovelMeta_複数回実行しても正常動作() {
+        String ncode = "n4830bu";
+
+        this.service.getNovelMeta(ncode);
+        this.service.getNovelMeta(ncode);
+    }
+
+    @Test
+    public void getNovelMeta_存在しないNコードの場合はエラー() {
+        String ncode = "n9999zz";
+
+        try {
+            this.service.getNovelMeta(ncode);
+
+            fail();
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
         }
     }
 

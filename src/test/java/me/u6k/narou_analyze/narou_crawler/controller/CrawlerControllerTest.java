@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMeta;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,11 +37,15 @@ public class CrawlerControllerTest {
     private MockMvc mvc;
 
     @Autowired
-    private NovelIndexRepository repo;
+    private NovelIndexRepository indexRepo;
+
+    @Autowired
+    private NovelMetaRepository metaRepo;
 
     @Before
     public void setup() {
-        this.repo.deleteAllInBatch();
+        this.indexRepo.deleteAllInBatch();
+        this.metaRepo.deleteAllInBatch();
 
         this.mvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
@@ -62,12 +68,23 @@ public class CrawlerControllerTest {
                         .contentType("application/json")
                         .content(json));
 
-        long count = this.repo.count();
+        long count = this.indexRepo.count();
         assertThat(count, greaterThan(21L));
 
         result.andExpect(status().isOk())
                         .andExpect(content().contentType("application/json;charset=UTF-8"))
                         .andExpect(jsonPath("$.count", is((int) count)));
+    }
+
+    @Test
+    public void getNovelMeta() throws Exception {
+        ResultActions result = perform(mvc, post("/api/novels/n4830bu/meta"));
+
+        result.andExpect(status().isOk());
+
+        NovelMeta meta = this.metaRepo.findOne("n4830bu");
+        assertThat(meta.getNcode(), is("n4830bu"));
+        assertNotNull(meta.getUpdated());
     }
 
 }

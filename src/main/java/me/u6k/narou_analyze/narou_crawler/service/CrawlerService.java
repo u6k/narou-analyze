@@ -1,16 +1,25 @@
 
 package me.u6k.narou_analyze.narou_crawler.service;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndex;
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMeta;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaRepository;
 import me.u6k.narou_analyze.narou_crawler.util.NetworkUtil;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -28,7 +37,10 @@ public class CrawlerService {
     private static final Logger L = LoggerFactory.getLogger(CrawlerService.class);
 
     @Autowired
-    private NovelIndexRepository repo;
+    private NovelIndexRepository indexRepo;
+
+    @Autowired
+    private NovelMetaRepository metaRepo;
 
     public long indexingNovel(Date searchDate) {
         try {
@@ -69,6 +81,27 @@ public class CrawlerService {
         }
     }
 
+    public void getNovelMeta(String ncode) {
+        try {
+            URL searchApiUrl = new URL("http://api.syosetu.com/novelapi/api/?gzip=5&out=json&ncode=" + ncode);
+            String json = NetworkUtil.get(searchApiUrl, true);
+
+            List<Map<String, Object>> jsonObj = new ObjectMapper().readValue(json, new TypeReference<List<Map<String, Object>>>() {
+            });
+            L.info("jsonObj={}", ToStringBuilder.reflectionToString(jsonObj));
+
+            NovelMeta meta = new NovelMeta();
+            meta.setNcode(ncode);
+            meta.setTitle((String) jsonObj.get(1).get("title"));
+            meta.setData(json.getBytes("UTF-8"));
+            meta.setUpdated(new Timestamp(System.currentTimeMillis()));
+
+            this.metaRepo.save(meta);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public URL buildSearchPageUrl(Date searchDate) throws MalformedURLException {
         SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
         SimpleDateFormat monthFormatter = new SimpleDateFormat("MM");
@@ -98,7 +131,7 @@ public class CrawlerService {
     private boolean saveNovelIndex(URL url, String title, Date searchDate) {
         String ncode = this.extractNCode(url);
 
-        if (this.repo.findOne(ncode) != null) {
+        if (this.indexRepo.findOne(ncode) != null) {
             return false;
         }
 
@@ -107,7 +140,7 @@ public class CrawlerService {
         index.setTitle(title);
         index.setSearchDate(searchDate);
 
-        this.repo.save(index);
+        this.indexRepo.save(index);
 
         return true;
     }
