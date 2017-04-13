@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,6 +34,14 @@ public class CrawlerController {
         result.setCount(count);
 
         return result;
+    }
+
+    @RequestMapping(value = "/api/novels/{ncode}/meta", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.OK)
+    public void getNovelMeta(@PathVariable("ncode") String ncode) {
+        L.debug("#getNovelMeta: ncode={}", ncode);
+
+        this.service.getNovelMeta(ncode);
     }
 
 }
