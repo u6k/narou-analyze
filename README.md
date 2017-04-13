@@ -43,7 +43,15 @@ curl -v \
     - 「小説家になろう」検索画面のURL
     - 検索画面の仕様で100ページ上限があるので、100ページ未満になるような検索画面URLを指定すること
 
-### 小説のメタ・データ、内容を取得
+### 小説のメタデータを取得
+
+```
+curl -v \
+    -X POST \
+    https://crawler.narou-analyze.u6k.me/api/novels/n1234ab/meta
+```
+
+### 小説の内容を取得
 
 TODO
 
