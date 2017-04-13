@@ -128,13 +128,13 @@ public class CrawlerServiceTest {
         long count3 = this.service.indexingNovel(searchDate3);
 
         List<String> ncodes1 = this.service.findNovelIndex(searchDate1);
-        assertThat(ncodes1.size(), is(count1));
+        assertThat((long) ncodes1.size(), is(count1));
 
         List<String> ncodes2 = this.service.findNovelIndex(searchDate2);
-        assertThat(ncodes2.size(), is(count2));
+        assertThat((long) ncodes2.size(), is(count2));
 
         List<String> ncodes3 = this.service.findNovelIndex(searchDate3);
-        assertThat(ncodes3.size(), is(count3));
+        assertThat((long) ncodes3.size(), is(count3));
     }
 
     @Test
