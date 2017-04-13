@@ -39,9 +39,9 @@ curl -v \
     https://crawler.narou-analyze.u6k.me/api/novels/
 ```
 
-- searchPageUrl
-    - 「小説家になろう」検索画面のURL
-    - 検索画面の仕様で100ページ上限があるので、100ページ未満になるような検索画面URLを指定すること
+- searchDate
+    - 「小説家になろう」検索画面で入力する検索日付
+    - 指定日付に更新された小説をインデックスする
 
 ### 小説のメタデータを取得
 
