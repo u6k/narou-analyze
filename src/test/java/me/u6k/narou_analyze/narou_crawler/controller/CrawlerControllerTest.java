@@ -6,9 +6,13 @@ import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
 import me.u6k.narou_analyze.narou_crawler.model.NovelMeta;
 import me.u6k.narou_analyze.narou_crawler.model.NovelMetaRepository;
+import me.u6k.narou_analyze.narou_crawler.service.CrawlerService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +45,9 @@ public class CrawlerControllerTest {
 
     @Autowired
     private NovelMetaRepository metaRepo;
+
+    @Autowired
+    private CrawlerService service;
 
     @Before
     public void setup() {
@@ -85,6 +92,24 @@ public class CrawlerControllerTest {
         NovelMeta meta = this.metaRepo.findOne("n4830bu");
         assertThat(meta.getNcode(), is("n4830bu"));
         assertNotNull(meta.getUpdated());
+    }
+
+    @Test
+    public void findNovelIndex() throws Exception {
+        Date searchDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-01");
+        long count1 = this.service.indexingNovel(searchDate1);
+
+        Date searchDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-02");
+        long count2 = this.service.indexingNovel(searchDate2);
+
+        Date searchDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-03");
+        long count3 = this.service.indexingNovel(searchDate3);
+
+        ResultActions result = perform(mvc, get("/api/ncodes/2010-04-02"));
+
+        result.andExpect(status().isOk())
+                        .andExpect(content().contentType("application/json;charset=UTF-8"))
+                        .andExpect(jsonPath("$").isArray());
     }
 
 }

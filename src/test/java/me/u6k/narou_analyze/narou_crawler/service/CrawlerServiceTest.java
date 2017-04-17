@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
 import me.u6k.narou_analyze.narou_crawler.model.NovelMeta;
@@ -113,6 +114,44 @@ public class CrawlerServiceTest {
         } catch (RuntimeException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Test
+    public void findNovelIndex_存在する検索日付でNコードを取得() throws Exception {
+        Date searchDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-01");
+        long count1 = this.service.indexingNovel(searchDate1);
+
+        Date searchDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-02");
+        long count2 = this.service.indexingNovel(searchDate2);
+
+        Date searchDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-03");
+        long count3 = this.service.indexingNovel(searchDate3);
+
+        List<String> ncodes1 = this.service.findNovelIndex(searchDate1);
+        assertThat((long) ncodes1.size(), is(count1));
+
+        List<String> ncodes2 = this.service.findNovelIndex(searchDate2);
+        assertThat((long) ncodes2.size(), is(count2));
+
+        List<String> ncodes3 = this.service.findNovelIndex(searchDate3);
+        assertThat((long) ncodes3.size(), is(count3));
+    }
+
+    @Test
+    public void findNovelIndex_存在しない検索日付の場合は0件() throws Exception {
+        Date searchDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-01");
+        this.service.indexingNovel(searchDate1);
+
+        Date searchDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-02");
+        this.service.indexingNovel(searchDate2);
+
+        Date searchDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-03");
+        this.service.indexingNovel(searchDate3);
+
+        Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2004-01-01");
+        List<String> ncodes1 = this.service.findNovelIndex(searchDate);
+
+        assertThat(ncodes1.size(), is(0));
     }
 
 }

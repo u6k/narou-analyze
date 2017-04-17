@@ -6,11 +6,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,6 +81,27 @@ public class CrawlerService {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<String> findNovelIndex(Date searchDate) {
+        if (searchDate == null) {
+            throw new IllegalArgumentException("searchDate is null.");
+        }
+
+        Calendar c = Calendar.getInstance();
+        c.setTime(searchDate);
+        c.set(Calendar.HOUR_OF_DAY, 0);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        c.set(Calendar.MILLISECOND, 0);
+        searchDate = c.getTime();
+
+        List<NovelIndex> indexes = this.indexRepo.findBySearchDate(searchDate);
+        List<String> ncodes = indexes.stream()
+                        .map(x -> x.getNcode())
+                        .collect(Collectors.toList());
+
+        return ncodes;
     }
 
     public void getNovelMeta(String ncode) {
