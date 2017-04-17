@@ -67,7 +67,7 @@ public class CrawlerControllerTest {
     }
 
     @Test
-    public void indexingNovel_複数ページでも正常動作() throws Exception {
+    public void updateNovelIndex_複数ページでも正常動作() throws Exception {
         String json = "{\"searchDate\":\"2010-01-01\"}";
         L.debug("request: json={}", json);
 
@@ -97,13 +97,13 @@ public class CrawlerControllerTest {
     @Test
     public void findNovelIndex() throws Exception {
         Date searchDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-01");
-        long count1 = this.service.indexingNovel(searchDate1);
+        this.service.updateNovelIndex(searchDate1);
 
         Date searchDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-02");
-        long count2 = this.service.indexingNovel(searchDate2);
+        this.service.updateNovelIndex(searchDate2);
 
         Date searchDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-03");
-        long count3 = this.service.indexingNovel(searchDate3);
+        this.service.updateNovelIndex(searchDate3);
 
         ResultActions result = perform(mvc, get("/api/ncodes/2010-04-02"));
 

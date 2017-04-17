@@ -51,34 +51,35 @@ public class CrawlerServiceTest {
         Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2010-01-01");
         URL searchPageUrl = this.service.buildSearchPageUrl(searchDate);
 
-        URL expectedUrl = new URL("http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2010%2F01%2F01&maxlastup=2010%2F01%2F01&order=old&type=&genre=&word=&notword=");
+        URL expectedUrl = new URL(
+                        "http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2010%2F01%2F01&maxlastup=2010%2F01%2F01&order=old&type=&genre=&word=&notword=");
 
         assertThat(searchPageUrl, is(expectedUrl));
     }
 
     @Test
-    public void indexingNovel_0件でも正常動作() throws Exception {
+    public void updateNovelIndex_0件でも正常動作() throws Exception {
         Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2004-04-01");
-        long count = this.service.indexingNovel(searchDate);
+        long count = this.service.updateNovelIndex(searchDate);
 
         assertThat(count, is(0L));
         assertThat(this.indexRepo.count(), is(count));
     }
 
     @Test
-    public void indexingNovel_複数ページでも正常動作() throws Exception {
+    public void updateNovelIndex_複数ページでも正常動作() throws Exception {
         Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2010-01-01");
-        long count = this.service.indexingNovel(searchDate);
+        long count = this.service.updateNovelIndex(searchDate);
 
         assertThat(count, greaterThan(21L));
         assertThat(this.indexRepo.count(), is(count));
     }
 
     @Test
-    public void indexingNovel_複数回実行しても正常動作() throws Exception {
+    public void updateNovelIndex_複数回実行しても正常動作() throws Exception {
         for (int i = 0; i < 3; i++) {
             Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2010-01-01");
-            this.service.indexingNovel(searchDate);
+            this.service.updateNovelIndex(searchDate);
         }
     }
 
@@ -119,13 +120,13 @@ public class CrawlerServiceTest {
     @Test
     public void findNovelIndex_存在する検索日付でNコードを取得() throws Exception {
         Date searchDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-01");
-        long count1 = this.service.indexingNovel(searchDate1);
+        long count1 = this.service.updateNovelIndex(searchDate1);
 
         Date searchDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-02");
-        long count2 = this.service.indexingNovel(searchDate2);
+        long count2 = this.service.updateNovelIndex(searchDate2);
 
         Date searchDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-03");
-        long count3 = this.service.indexingNovel(searchDate3);
+        long count3 = this.service.updateNovelIndex(searchDate3);
 
         List<String> ncodes1 = this.service.findNovelIndex(searchDate1);
         assertThat((long) ncodes1.size(), is(count1));
@@ -140,13 +141,13 @@ public class CrawlerServiceTest {
     @Test
     public void findNovelIndex_存在しない検索日付の場合は0件() throws Exception {
         Date searchDate1 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-01");
-        this.service.indexingNovel(searchDate1);
+        this.service.updateNovelIndex(searchDate1);
 
         Date searchDate2 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-02");
-        this.service.indexingNovel(searchDate2);
+        this.service.updateNovelIndex(searchDate2);
 
         Date searchDate3 = new SimpleDateFormat("yyyy-MM-dd").parse("2010-04-03");
-        this.service.indexingNovel(searchDate3);
+        this.service.updateNovelIndex(searchDate3);
 
         Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2004-01-01");
         List<String> ncodes1 = this.service.findNovelIndex(searchDate);

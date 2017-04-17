@@ -30,10 +30,10 @@ public class CrawlerController {
     @RequestMapping(value = "/api/novels/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public IndexingNovelResult indexingNovel(@RequestBody IndexingNovelParam param) {
-        L.debug("#indexingNovel: param={}", param);
+    public IndexingNovelResult updateNovelIndex(@RequestBody IndexingNovelParam param) {
+        L.debug("#updateNovelIndex: param={}", param);
 
-        long count = this.service.indexingNovel(param.getSearchDate());
+        long count = this.service.updateNovelIndex(param.getSearchDate());
 
         IndexingNovelResult result = new IndexingNovelResult();
         result.setCount(count);
