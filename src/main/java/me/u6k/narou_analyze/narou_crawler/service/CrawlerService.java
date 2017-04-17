@@ -44,7 +44,7 @@ public class CrawlerService {
     @Autowired
     private NovelMetaRepository metaRepo;
 
-    public long indexingNovel(Date searchDate) {
+    public long updateNovelIndex(Date searchDate) {
         try {
             long count = 0;
 
