@@ -1,6 +1,11 @@
 
 package me.u6k.narou_analyze.narou_crawler.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import me.u6k.narou_analyze.narou_crawler.service.CrawlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +47,19 @@ public class CrawlerController {
         L.debug("#getNovelMeta: ncode={}", ncode);
 
         this.service.getNovelMeta(ncode);
+    }
+
+    @RequestMapping(value = "/api/ncodes/{searchDate}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<String> findNCodes(@PathVariable("searchDate") String searchDateText) throws ParseException {
+        L.debug("#findNCodes: searchDateText={}", searchDateText);
+
+        Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse(searchDateText);
+
+        List<String> ncodes = this.service.findNovelIndex(searchDate);
+
+        return ncodes;
     }
 
 }
