@@ -42,7 +42,7 @@ public class CrawlerController {
     }
 
     @RequestMapping(value = "/api/novels/{ncode}/meta", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateNovelMeta(@PathVariable("ncode") String ncode) {
         L.debug("#updateNovelMeta: ncode={}", ncode);
 
