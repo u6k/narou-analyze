@@ -122,6 +122,10 @@ public class CrawlerService {
         this.metaDataRepo.save(metaData);
     }
 
+    public void analyzeNovelMeta(String ncode) {
+        throw new UnsupportedOperationException();
+    }
+
     private URL buildSearchPageUrl(Date searchDate) throws MalformedURLException {
         SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
         SimpleDateFormat monthFormatter = new SimpleDateFormat("MM");
