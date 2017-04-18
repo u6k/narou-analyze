@@ -45,9 +45,20 @@ public class CrawlerController {
     @RequestMapping(value = "/api/novels/{ncode}/meta/download", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void downloadNovelMeta(@PathVariable("ncode") String ncode) {
-        L.debug("#updateNovelMeta: ncode={}", ncode);
+        L.debug("#downloadNovelMeta: ncode={}", ncode);
         try {
             this.service.downloadNovelMeta(ncode);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @RequestMapping(value = "/api/novels/{ncode}/meta/", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void analyzeNovelMeta(@PathVariable("ncode") String ncode) throws ParseException {
+        L.debug("#analyzeNovelMeta: ncode={}", ncode);
+        try {
+            this.service.analyzeNovelMeta(ncode);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
