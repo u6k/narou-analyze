@@ -87,7 +87,7 @@ public class CrawlerControllerTest {
     public void updateNovelMeta() throws Exception {
         ResultActions result = perform(mvc, post("/api/novels/n4830bu/meta"));
 
-        result.andExpect(status().isOk());
+        result.andExpect(status().isNoContent());
 
         NovelMeta meta = this.metaRepo.findOne("n4830bu");
         assertThat(meta.getNcode(), is("n4830bu"));
