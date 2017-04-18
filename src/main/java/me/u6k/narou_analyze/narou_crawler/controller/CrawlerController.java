@@ -1,6 +1,7 @@
 
 package me.u6k.narou_analyze.narou_crawler.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,25 +42,31 @@ public class CrawlerController {
         return result;
     }
 
-    @RequestMapping(value = "/api/novels/{ncode}/meta", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/novels/{ncode}/meta/download", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateNovelMeta(@PathVariable("ncode") String ncode) {
+    public void downloadNovelMeta(@PathVariable("ncode") String ncode) {
         L.debug("#updateNovelMeta: ncode={}", ncode);
-
-        this.service.updateNovelMeta(ncode);
+        try {
+            this.service.downloadNovelMeta(ncode);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @RequestMapping(value = "/api/ncodes/{searchDate}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<String> findNCodes(@PathVariable("searchDate") String searchDateText) throws ParseException {
+    public List<String> findNCodes(@PathVariable("searchDate") String searchDateText) {
         L.debug("#findNCodes: searchDateText={}", searchDateText);
+        try {
+            Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse(searchDateText);
 
-        Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse(searchDateText);
+            List<String> ncodes = this.service.findNovelIndex(searchDate);
 
-        List<String> ncodes = this.service.findNovelIndex(searchDate);
-
-        return ncodes;
+            return ncodes;
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

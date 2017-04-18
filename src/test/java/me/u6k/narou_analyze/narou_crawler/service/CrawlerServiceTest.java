@@ -4,14 +4,13 @@ package me.u6k.narou_analyze.narou_crawler.service;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
-import me.u6k.narou_analyze.narou_crawler.model.NovelMeta;
-import me.u6k.narou_analyze.narou_crawler.model.NovelMetaRepository;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaData;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaDataRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,31 +29,12 @@ public class CrawlerServiceTest {
     private NovelIndexRepository indexRepo;
 
     @Autowired
-    private NovelMetaRepository metaRepo;
+    private NovelMetaDataRepository metaDataRepo;
 
     @Before
     public void setup() {
         this.indexRepo.deleteAllInBatch();
-        this.metaRepo.deleteAllInBatch();
-    }
-
-    @Test
-    public void extractNCode() throws Exception {
-        URL url = new URL("http://ncode.syosetu.com/n4830bu/");
-        String ncode = this.service.extractNCode(url);
-
-        assertThat(ncode, is("n4830bu"));
-    }
-
-    @Test
-    public void buildSearchPageUrl() throws Exception {
-        Date searchDate = new SimpleDateFormat("yyyy-MM-dd").parse("2010-01-01");
-        URL searchPageUrl = this.service.buildSearchPageUrl(searchDate);
-
-        URL expectedUrl = new URL(
-                        "http://yomou.syosetu.com/search.php?mintime=&maxtime=&minlen=&maxlen=&minlastup=2010%2F01%2F01&maxlastup=2010%2F01%2F01&order=old&type=&genre=&word=&notword=");
-
-        assertThat(searchPageUrl, is(expectedUrl));
+        this.metaDataRepo.deleteAllInBatch();
     }
 
     @Test
@@ -84,38 +64,37 @@ public class CrawlerServiceTest {
     }
 
     @Test
-    public void updateNovelMeta_本好きの下剋上を取得() {
+    public void downloadNovelMeta_本好きの下剋上を取得() throws Exception {
         String ncode = "n4830bu";
 
-        this.service.updateNovelMeta(ncode);
+        this.service.downloadNovelMeta(ncode);
 
-        NovelMeta meta = this.metaRepo.findOne(ncode);
+        NovelMetaData metaData = this.metaDataRepo.findOne(ncode);
 
-        assertNotNull(meta);
-        assertThat(meta.getNcode(), is("n4830bu"));
-        assertThat(meta.getTitle(), is("本好きの下剋上　～司書になるためには手段を選んでいられません～"));
-        assertThat(meta.getData().length, greaterThan(0));
-        assertNotNull(meta.getUpdated());
+        assertNotNull(metaData);
+        assertThat(metaData.getNcode(), is("n4830bu"));
+        assertThat(metaData.getData().length, greaterThan(0));
+        assertNotNull(metaData.getUpdated());
     }
 
     @Test
-    public void updateNovelMeta_複数回実行しても正常動作() {
+    public void downloadNovelMeta_複数回実行しても正常動作() throws Exception {
         String ncode = "n4830bu";
 
-        this.service.updateNovelMeta(ncode);
-        this.service.updateNovelMeta(ncode);
+        this.service.downloadNovelMeta(ncode);
+        this.service.downloadNovelMeta(ncode);
     }
 
     @Test
-    public void updateNovelMeta_存在しないNコードの場合はエラー() {
+    public void downloadNovelMeta_存在しないNコードの場合はエラー() throws Exception {
         String ncode = "n9999zz";
 
         try {
-            this.service.updateNovelMeta(ncode);
+            this.service.downloadNovelMeta(ncode);
 
             fail();
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+            assertThat(e.getMessage(), is("allcount is 0."));
         }
     }
 

@@ -10,8 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
-import me.u6k.narou_analyze.narou_crawler.model.NovelMeta;
-import me.u6k.narou_analyze.narou_crawler.model.NovelMetaRepository;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaData;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaDataRepository;
 import me.u6k.narou_analyze.narou_crawler.service.CrawlerService;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class CrawlerControllerTest {
     private NovelIndexRepository indexRepo;
 
     @Autowired
-    private NovelMetaRepository metaRepo;
+    private NovelMetaDataRepository metaDataRepo;
 
     @Autowired
     private CrawlerService service;
@@ -52,7 +52,7 @@ public class CrawlerControllerTest {
     @Before
     public void setup() {
         this.indexRepo.deleteAllInBatch();
-        this.metaRepo.deleteAllInBatch();
+        this.metaDataRepo.deleteAllInBatch();
 
         this.mvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
@@ -67,7 +67,7 @@ public class CrawlerControllerTest {
     }
 
     @Test
-    public void updateNovelIndex_複数ページでも正常動作() throws Exception {
+    public void updateNovelIndex() throws Exception {
         String json = "{\"searchDate\":\"2010-01-01\"}";
         L.debug("request: json={}", json);
 
@@ -84,14 +84,15 @@ public class CrawlerControllerTest {
     }
 
     @Test
-    public void updateNovelMeta() throws Exception {
-        ResultActions result = perform(mvc, post("/api/novels/n4830bu/meta"));
+    public void downloadNovelMeta() throws Exception {
+        ResultActions result = perform(mvc, post("/api/novels/n4830bu/meta/download"));
 
         result.andExpect(status().isNoContent());
 
-        NovelMeta meta = this.metaRepo.findOne("n4830bu");
-        assertThat(meta.getNcode(), is("n4830bu"));
-        assertNotNull(meta.getUpdated());
+        NovelMetaData metaData = this.metaDataRepo.findOne("n4830bu");
+        assertThat(metaData.getNcode(), is("n4830bu"));
+        assertThat(metaData.getData().length, greaterThan(0));
+        assertNotNull(metaData.getUpdated());
     }
 
     @Test

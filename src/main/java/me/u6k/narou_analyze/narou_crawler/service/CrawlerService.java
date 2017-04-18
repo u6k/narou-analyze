@@ -18,10 +18,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndex;
 import me.u6k.narou_analyze.narou_crawler.model.NovelIndexRepository;
-import me.u6k.narou_analyze.narou_crawler.model.NovelMeta;
-import me.u6k.narou_analyze.narou_crawler.model.NovelMetaRepository;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaData;
+import me.u6k.narou_analyze.narou_crawler.model.NovelMetaDataRepository;
 import me.u6k.narou_analyze.narou_crawler.util.NetworkUtil;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -42,7 +41,7 @@ public class CrawlerService {
     private NovelIndexRepository indexRepo;
 
     @Autowired
-    private NovelMetaRepository metaRepo;
+    private NovelMetaDataRepository metaDataRepo;
 
     public long updateNovelIndex(Date searchDate) {
         try {
@@ -104,28 +103,26 @@ public class CrawlerService {
         return ncodes;
     }
 
-    public void updateNovelMeta(String ncode) {
-        try {
-            URL searchApiUrl = new URL("http://api.syosetu.com/novelapi/api/?gzip=5&out=json&ncode=" + ncode);
-            String json = NetworkUtil.get(searchApiUrl, true);
+    public void downloadNovelMeta(String ncode) throws IOException {
+        URL searchApiUrl = new URL("http://api.syosetu.com/novelapi/api/?gzip=5&out=json&ncode=" + ncode);
+        String json = NetworkUtil.get(searchApiUrl, true);
+        L.info("json={}", json);
 
-            List<Map<String, Object>> jsonObj = new ObjectMapper().readValue(json, new TypeReference<List<Map<String, Object>>>() {
-            });
-            L.info("jsonObj={}", ToStringBuilder.reflectionToString(jsonObj));
-
-            NovelMeta meta = new NovelMeta();
-            meta.setNcode(ncode);
-            meta.setTitle((String) jsonObj.get(1).get("title"));
-            meta.setData(json.getBytes("UTF-8"));
-            meta.setUpdated(new Timestamp(System.currentTimeMillis()));
-
-            this.metaRepo.save(meta);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        List<Map<String, Object>> jsonObj = new ObjectMapper().readValue(json, new TypeReference<List<Map<String, Object>>>() {
+        });
+        if (((int) jsonObj.get(0).get("allcount")) == 0) {
+            throw new RuntimeException("allcount is 0.");
         }
+
+        NovelMetaData metaData = new NovelMetaData();
+        metaData.setNcode(ncode);
+        metaData.setData(json.getBytes("UTF-8"));
+        metaData.setUpdated(new Timestamp(System.currentTimeMillis()));
+
+        this.metaDataRepo.save(metaData);
     }
 
-    public URL buildSearchPageUrl(Date searchDate) throws MalformedURLException {
+    private URL buildSearchPageUrl(Date searchDate) throws MalformedURLException {
         SimpleDateFormat yearFormatter = new SimpleDateFormat("yyyy");
         SimpleDateFormat monthFormatter = new SimpleDateFormat("MM");
         SimpleDateFormat dayFormatter = new SimpleDateFormat("dd");
@@ -139,7 +136,7 @@ public class CrawlerService {
         return searchPageUrl;
     }
 
-    public String extractNCode(URL url) {
+    private String extractNCode(URL url) {
         Pattern p = Pattern.compile("^http:\\/\\/ncode\\.syosetu\\.com\\/(\\w+)\\/$");
         Matcher m = p.matcher(url.toString());
         if (!m.matches()) {
