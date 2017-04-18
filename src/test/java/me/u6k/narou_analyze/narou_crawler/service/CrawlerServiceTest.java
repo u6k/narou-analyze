@@ -93,6 +93,8 @@ public class CrawlerServiceTest {
 
         assertNotNull(meta);
         assertThat(meta.getNcode(), is("n4830bu"));
+        assertThat(meta.getTitle(), is("本好きの下剋上　～司書になるためには手段を選んでいられません～"));
+        assertThat(meta.getData().length, greaterThan(0));
         assertNotNull(meta.getUpdated());
     }
 
