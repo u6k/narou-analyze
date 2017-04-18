@@ -1,7 +1,7 @@
 
 package me.u6k.narou_analyze.narou_crawler.controller;
 
-public class IndexingNovelResult {
+public class UpdateNovelIndexResult {
 
     private long count;
 

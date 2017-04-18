@@ -84,7 +84,7 @@ public class CrawlerControllerTest {
     }
 
     @Test
-    public void getNovelMeta() throws Exception {
+    public void updateNovelMeta() throws Exception {
         ResultActions result = perform(mvc, post("/api/novels/n4830bu/meta"));
 
         result.andExpect(status().isOk());

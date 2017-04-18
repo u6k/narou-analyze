@@ -84,10 +84,10 @@ public class CrawlerServiceTest {
     }
 
     @Test
-    public void getNovelMeta_本好きの下剋上を取得() {
+    public void updateNovelMeta_本好きの下剋上を取得() {
         String ncode = "n4830bu";
 
-        this.service.getNovelMeta(ncode);
+        this.service.updateNovelMeta(ncode);
 
         NovelMeta meta = this.metaRepo.findOne(ncode);
 
@@ -97,19 +97,19 @@ public class CrawlerServiceTest {
     }
 
     @Test
-    public void getNovelMeta_複数回実行しても正常動作() {
+    public void updateNovelMeta_複数回実行しても正常動作() {
         String ncode = "n4830bu";
 
-        this.service.getNovelMeta(ncode);
-        this.service.getNovelMeta(ncode);
+        this.service.updateNovelMeta(ncode);
+        this.service.updateNovelMeta(ncode);
     }
 
     @Test
-    public void getNovelMeta_存在しないNコードの場合はエラー() {
+    public void updateNovelMeta_存在しないNコードの場合はエラー() {
         String ncode = "n9999zz";
 
         try {
-            this.service.getNovelMeta(ncode);
+            this.service.updateNovelMeta(ncode);
 
             fail();
         } catch (RuntimeException e) {

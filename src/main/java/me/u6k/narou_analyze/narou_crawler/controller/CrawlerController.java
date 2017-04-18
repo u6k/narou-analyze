@@ -30,12 +30,12 @@ public class CrawlerController {
     @RequestMapping(value = "/api/novels/", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public IndexingNovelResult updateNovelIndex(@RequestBody IndexingNovelParam param) {
+    public UpdateNovelIndexResult updateNovelIndex(@RequestBody UpdateNovelIndexParam param) {
         L.debug("#updateNovelIndex: param={}", param);
 
         long count = this.service.updateNovelIndex(param.getSearchDate());
 
-        IndexingNovelResult result = new IndexingNovelResult();
+        UpdateNovelIndexResult result = new UpdateNovelIndexResult();
         result.setCount(count);
 
         return result;
@@ -43,10 +43,10 @@ public class CrawlerController {
 
     @RequestMapping(value = "/api/novels/{ncode}/meta", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public void getNovelMeta(@PathVariable("ncode") String ncode) {
-        L.debug("#getNovelMeta: ncode={}", ncode);
+    public void updateNovelMeta(@PathVariable("ncode") String ncode) {
+        L.debug("#updateNovelMeta: ncode={}", ncode);
 
-        this.service.getNovelMeta(ncode);
+        this.service.updateNovelMeta(ncode);
     }
 
     @RequestMapping(value = "/api/ncodes/{searchDate}", method = RequestMethod.GET)

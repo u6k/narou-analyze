@@ -104,7 +104,7 @@ public class CrawlerService {
         return ncodes;
     }
 
-    public void getNovelMeta(String ncode) {
+    public void updateNovelMeta(String ncode) {
         try {
             URL searchApiUrl = new URL("http://api.syosetu.com/novelapi/api/?gzip=5&out=json&ncode=" + ncode);
             String json = NetworkUtil.get(searchApiUrl, true);
