@@ -5,7 +5,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class IndexingNovelParam {
+public class UpdateNovelIndexParam {
 
     private Date searchDate;
 
