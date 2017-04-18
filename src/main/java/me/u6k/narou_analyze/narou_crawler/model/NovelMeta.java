@@ -9,6 +9,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -41,7 +42,7 @@ public class NovelMeta {
     private int genre;
 
     @Column(name = "keywords", nullable = true)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> keywords;
 
     @Column(name = "general_firstup", nullable = false)
@@ -61,7 +62,7 @@ public class NovelMeta {
     private int generalAllNo;
 
     @Column(name = "length", nullable = false)
-    private long length;
+    private int length;
 
     @Column(name = "time", nullable = false)
     private int time;
@@ -223,11 +224,11 @@ public class NovelMeta {
         this.generalAllNo = generalAllNo;
     }
 
-    public long getLength() {
+    public int getLength() {
         return length;
     }
 
-    public void setLength(long length) {
+    public void setLength(int length) {
         this.length = length;
     }
 

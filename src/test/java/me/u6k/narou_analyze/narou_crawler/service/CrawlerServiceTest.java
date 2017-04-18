@@ -41,9 +41,9 @@ public class CrawlerServiceTest {
 
     @Before
     public void setup() {
-        this.indexRepo.deleteAllInBatch();
-        this.metaRepo.deleteAllInBatch();
-        this.metaDataRepo.deleteAllInBatch();
+        this.indexRepo.deleteAll();
+        this.metaRepo.deleteAll();
+        this.metaDataRepo.deleteAll();
     }
 
     @Test
@@ -160,14 +160,14 @@ public class CrawlerServiceTest {
         this.service.analyzeNovelMeta(ncode);
 
         NovelMeta meta = this.metaRepo.findOne(ncode);
-        assertThat(meta.getNcode(), is("N4830BU"));
+        assertThat(meta.getNcode(), is("n4830bu"));
         assertThat(meta.getTitle(), is("本好きの下剋上　～司書になるためには手段を選んでいられません～"));
         assertThat(meta.getUserId(), is(372556));
         assertThat(meta.getWriter(), is("香月　美夜"));
         assertThat(meta.getStory(), is("　本が好きで、司書資格を取り、大学図書館への就職が決まっていたのに、大学卒業直後に死んでしまった麗乃。転生したのは、識字率が低くて本が少ない世界の兵士の娘。いくら読みたくても周りに本なんてあるはずない。本がないならどうする？　作ってしまえばいいじゃない。目指すは図書館司書！　本に囲まれて生きるため、本を作るところから始めよう。※最初の主人公の性格が最悪です。ある程度成長するまで、気分悪くなる恐れがあります。（R15は念のため）"));
         assertThat(meta.getBigGenre(), is(2));
         assertThat(meta.getGenre(), is(201));
-        assertThat(meta.getKeywords().size(), is(5));
+        assertThat(meta.getKeywords().size(), is(6));
         assertThat(meta.getKeywords(), contains("R15", "異世界転生", "ファンタジー", "異世界", "転生", "女主人公"));
         assertThat(meta.getGeneralFirstup(), is(buildTimestamp("2013-09-23 13:35:08")));
         assertThat(meta.getGeneralLastup(), is(buildTimestamp("2017-03-12 12:18:40")));
@@ -176,7 +176,7 @@ public class CrawlerServiceTest {
         assertThat(meta.getGeneralAllNo(), is(677));
         assertThat(meta.getLength(), is(5682766));
         assertThat(meta.getTime(), is(11366));
-        assertFalse(meta.isStop());
+        assertTrue(meta.isStop());
         assertTrue(meta.isR15());
         assertFalse(meta.isBoysLove());
         assertFalse(meta.isGirlsLove());
@@ -197,7 +197,7 @@ public class CrawlerServiceTest {
     @Test
     public void analyzeNovelMeta_正しいJSONを解析できる_2() throws Exception {
         String ncode = "n4830bu";
-        String json = "[{\"allcount\":1},{\"title\":\"\",\"ncode\":\"N4830BU\",\"userid\":0,\"writer\":\"\",\"story\":\"\",\"biggenre\":0,\"genre\":0,\"gensaku\":\"\",\"keyword\":\"\",\"general_firstup\":\"2013-09-23 13:35:08\",\"general_lastup\":\"2017-03-12 12:18:40\",\"novel_type\":2,\"end\":1,\"general_all_no\":0,\"length\":0,\"time\":0,\"isstop\":1,\"isr15\":0,\"isbl\":1,\"isgl\":1,\"iszankoku\":1,\"istensei\":0,\"istenni\":1,\"pc_or_k\":0,\"global_point\":0,\"fav_novel_cnt\":0,\"review_cnt\":0,\"all_point\":0,\"all_hyoka_cnt\":0,\"sasie_cnt\":123,\"kaiwaritu\":12,\"novelupdated_at\":\"2017-03-12 12:21:33\",\"updated_at\":\"2017-04-18 18:19:36\"}]";
+        String json = "[{\"allcount\":1},{\"title\":\"\",\"ncode\":\"N4830BU\",\"userid\":0,\"writer\":\"\",\"story\":\"\",\"biggenre\":0,\"genre\":0,\"gensaku\":\"\",\"keyword\":\"\",\"general_firstup\":\"2013-09-23 13:35:08\",\"general_lastup\":\"2017-03-12 12:18:40\",\"novel_type\":2,\"end\":1,\"general_all_no\":0,\"length\":0,\"time\":0,\"isstop\":1,\"isr15\":0,\"isbl\":1,\"isgl\":1,\"iszankoku\":1,\"istensei\":0,\"istenni\":1,\"pc_or_k\":0,\"global_point\":0,\"fav_novel_cnt\":0,\"review_cnt\":0,\"all_point\":0,\"all_hyoka_cnt\":0,\"sasie_cnt\":123,\"kaiwaritu\":0,\"novelupdated_at\":\"2017-03-12 12:21:33\",\"updated_at\":\"2017-04-18 18:19:36\"}]";
 
         NovelMetaData metaData = new NovelMetaData();
         metaData.setNcode(ncode);
@@ -209,7 +209,7 @@ public class CrawlerServiceTest {
         this.service.analyzeNovelMeta(ncode);
 
         NovelMeta meta = this.metaRepo.findOne(ncode);
-        assertThat(meta.getNcode(), is("N4830BU"));
+        assertThat(meta.getNcode(), is("n4830bu"));
         assertThat(meta.getTitle(), is(""));
         assertThat(meta.getUserId(), is(0));
         assertThat(meta.getWriter(), is(""));
@@ -224,7 +224,7 @@ public class CrawlerServiceTest {
         assertThat(meta.getGeneralAllNo(), is(0));
         assertThat(meta.getLength(), is(0));
         assertThat(meta.getTime(), is(0));
-        assertTrue(meta.isStop());
+        assertFalse(meta.isStop());
         assertFalse(meta.isR15());
         assertTrue(meta.isBoysLove());
         assertTrue(meta.isGirlsLove());
@@ -236,7 +236,7 @@ public class CrawlerServiceTest {
         assertThat(meta.getReviewCount(), is(0));
         assertThat(meta.getAllPoint(), is(0));
         assertThat(meta.getAllHyokaCount(), is(0));
-        assertThat(meta.getSasieCount(), is(12));
+        assertThat(meta.getSasieCount(), is(123));
         assertThat(meta.getKaiwaRitu(), is(0));
         assertThat(meta.getNovelUpdatedAt(), is(buildTimestamp("2017-03-12 12:21:33")));
         assertNotNull(meta.getUpdated());
@@ -257,14 +257,14 @@ public class CrawlerServiceTest {
         this.service.analyzeNovelMeta(ncode);
 
         NovelMeta meta = this.metaRepo.findOne(ncode);
-        assertThat(meta.getNcode(), is("N4830BU"));
+        assertThat(meta.getNcode(), is("n4830bu"));
         assertThat(meta.getTitle(), is("本好きの下剋上　～司書になるためには手段を選んでいられません～"));
         assertThat(meta.getUserId(), is(372556));
         assertThat(meta.getWriter(), is("香月　美夜"));
         assertThat(meta.getStory(), is("　本が好きで、司書資格を取り、大学図書館への就職が決まっていたのに、大学卒業直後に死んでしまった麗乃。転生したのは、識字率が低くて本が少ない世界の兵士の娘。いくら読みたくても周りに本なんてあるはずない。本がないならどうする？　作ってしまえばいいじゃない。目指すは図書館司書！　本に囲まれて生きるため、本を作るところから始めよう。※最初の主人公の性格が最悪です。ある程度成長するまで、気分悪くなる恐れがあります。（R15は念のため）"));
         assertThat(meta.getBigGenre(), is(2));
         assertThat(meta.getGenre(), is(201));
-        assertThat(meta.getKeywords().size(), is(5));
+        assertThat(meta.getKeywords().size(), is(6));
         assertThat(meta.getKeywords(), contains("R15", "異世界転生", "ファンタジー", "異世界", "転生", "女主人公"));
         assertThat(meta.getGeneralFirstup(), is(buildTimestamp("2013-09-23 13:35:08")));
         assertThat(meta.getGeneralLastup(), is(buildTimestamp("2017-03-12 12:18:40")));
@@ -273,7 +273,7 @@ public class CrawlerServiceTest {
         assertThat(meta.getGeneralAllNo(), is(677));
         assertThat(meta.getLength(), is(5682766));
         assertThat(meta.getTime(), is(11366));
-        assertFalse(meta.isStop());
+        assertTrue(meta.isStop());
         assertTrue(meta.isR15());
         assertFalse(meta.isBoysLove());
         assertFalse(meta.isGirlsLove());
@@ -301,7 +301,7 @@ public class CrawlerServiceTest {
         this.service.analyzeNovelMeta(ncode);
 
         meta = this.metaRepo.findOne(ncode);
-        assertThat(meta.getNcode(), is("N4830BU"));
+        assertThat(meta.getNcode(), is("n4830bu"));
         assertThat(meta.getTitle(), is("本好きの下剋上　～司書になるためには手段を選んでいられません～"));
         assertThat(meta.getUserId(), is(372556));
         assertThat(meta.getWriter(), is("香月　美夜"));
@@ -317,7 +317,7 @@ public class CrawlerServiceTest {
         assertThat(meta.getGeneralAllNo(), is(677));
         assertThat(meta.getLength(), is(5682766));
         assertThat(meta.getTime(), is(11366));
-        assertFalse(meta.isStop());
+        assertTrue(meta.isStop());
         assertTrue(meta.isR15());
         assertFalse(meta.isBoysLove());
         assertFalse(meta.isGirlsLove());
