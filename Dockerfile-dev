@@ -6,7 +6,7 @@ RUN apk update && \
     apk add maven
 
 # Setup work directory
-VOLUME /var/my-app
+RUN mkdir -p /var/my-app
 WORKDIR /var/my-app
 
 # Setup docker run setting
