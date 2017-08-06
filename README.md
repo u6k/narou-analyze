@@ -1,8 +1,11 @@
-# narou-crawler
+# narou-analyze
 
-[![CircleCI](https://circleci.com/gh/u6k/narou-crawler.svg?style=svg)](https://circleci.com/gh/u6k/narou-crawler)
+[![CircleCI](https://img.shields.io/circleci/project/github/u6k/narou-analyze.svg)](https://circleci.com/gh/u6k/narou-analyze)
+[![license](https://img.shields.io/github/license/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/blob/master/LICENSE)
+[![GitHub tag](https://img.shields.io/github/tag/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/releases)
+[![Docker Pulls](https://img.shields.io/docker/pulls/u6kapps/narou-analyze.svg)](https://hub.docker.com/r/u6kapps/narou-analyze/)
 
-「小説家になろう」をクローリングして、データを収集します。
+「小説家になろう」をクローリングして、データを収集、分析します。
 
 ## Requirement
 
@@ -82,7 +85,7 @@ curl -v \
 開発用Dockerイメージをビルドします。
 
 ```
-docker build -t u6kapps/narou-crawler-dev -f Dockerfile-dev .
+docker build -t narou-analyze-dev -f Dockerfile-dev .
 ```
 
 Eclipseプロジェクトを作成します。
@@ -90,9 +93,9 @@ Eclipseプロジェクトを作成します。
 ```
 docker run \
     --rm \
-    -v $HOME/.m2:/root/.m2 \
-    -v $(pwd):/var/my-app \
-    u6kapps/narou-crawler-dev mvn eclipse:eclipse
+    -v "${HOME}/.m2:/root/.m2" \
+    -v "${PWD}:/var/my-app" \
+    narou-analyze-dev mvn eclipse:eclipse
 ```
 
 ### 開発環境でアプリケーションを実行
@@ -103,9 +106,9 @@ PostgreSQLコンテナを起動します。
 docker run \
     -d \
     --name db \
-    -e POSTGRES_PASSWORD=db_pass \
-    -e POSTGRES_USER=db_user \
-    -e POSTGRES_DB=narou_crawler \
+    -e "POSTGRES_PASSWORD=db_pass" \
+    -e "POSTGRES_USER=db_user" \
+    -e "POSTGRES_DB=narou_analyze" \
     postgres
 ```
 
@@ -114,70 +117,58 @@ docker run \
 ```
 docker run \
     --rm \
-    --name narou_crawler \
-    -v $HOME/.m2:/root/.m2 \
-    -v $(pwd):/var/my-app \
+    --name narou_analyze \
+    -v "${HOME}/.m2:/root/.m2" \
+    -v "${PWD}:/var/my-app" \
     --link db:db \
-    -e NAROU_CRAWLER_DB_USER=db_user \
-    -e NAROU_CRAWLER_DB_PASS=db_pass \
-    -e NAROU_CRAWLER_DB_HOST=db \
-    -e NAROU_CRAWLER_DB_NAME=narou_crawler \
+    -e "NAROU_CRAWLER_DB_USER=db_user" \
+    -e "NAROU_CRAWLER_DB_PASS=db_pass" \
+    -e "NAROU_CRAWLER_DB_HOST=db" \
+    -e "NAROU_CRAWLER_DB_NAME=narou_analyze" \
     -p 8080:8080 \
-    u6kapps/narou-crawler-dev mvn spring-boot:run
+    narou-analyze-dev mvn spring-boot:run
 ```
 
-### 実行用Dockerイメージをビルド
+### ビルド
 
 PostgreSQLコンテナを起動します。コマンドは上記と同じ。
 
-jarファイルを作成します。
+テスト実行し、jarファイルをパッケージングします。
 
 ```
 docker run \
     --rm \
-    --name narou_crawler \
-    -v $HOME/.m2:/root/.m2 \
-    -v $(pwd):/var/my-app \
+    --name narou_analyze \
+    -v "${HOME}/.m2:/root/.m2" \
+    -v "${PWD}:/var/my-app" \
     --link db:db \
-    -e NAROU_CRAWLER_DB_USER=db_user \
-    -e NAROU_CRAWLER_DB_PASS=db_pass \
-    -e NAROU_CRAWLER_DB_HOST=db \
-    -e NAROU_CRAWLER_DB_NAME=narou_crawler \
-    u6kapps/narou-crawler-dev
+    -e "NAROU_CRAWLER_DB_USER=db_user" \
+    -e "NAROU_CRAWLER_DB_PASS=db_pass" \
+    -e "NAROU_CRAWLER_DB_HOST=db" \
+    -e "NAROU_CRAWLER_DB_NAME=narou_analyze" \
+    narou-analyze-dev
 ```
 
 実行用Dockerイメージをビルドします。
 
 ```
-docker build -t u6kapps/narou-crawler .
+docker build -t u6kapps/narou-analyze .
 ```
 
 ### 実行
 
-PostgreSQLコンテナを起動します。本番環境なので、パスワードは変更してください。
-
-実行用コンテナを起動します。
+実行用Dockerイメージを起動します。環境変数を設定する必要があることに注意。
 
 ```
-docker run \
-    -d \
-    --name narou-crawler \
-    --link db:db \
-    -e NAROU_CRAWLER_DB_USER=db_user \
-    -e NAROU_CRAWLER_DB_PASS=db_pass \
-    -e NAROU_CRAWLER_DB_HOST=db \
-    -e NAROU_CRAWLER_DB_NAME=narou_crawler \
-    -p 8080:8080 \
-    u6kapps/narou-crawler
+$ docker-compose up -d
 ```
 
 ## Links
 
-- GitHub
-    - [u6k/narou-crawler](https://github.com/u6k/narou-crawler)
-- Author
-    - [u6k.blog()](http://blog.u6k.me)
+- [narou-analyze - u6k.Redmine](https://redmine.u6k.me/projects/narou-analyze)
+- [u6k/narou-analyze - GitHub](https://github.com/u6k/narou-analyze)
+- [u6k.blog](http://blog.u6k.me)
 
 ## License
 
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://opensource.org/licenses/MIT)
+[![license](https://img.shields.io/github/license/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/blob/master/LICENSE)

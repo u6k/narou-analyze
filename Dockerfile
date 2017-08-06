@@ -2,9 +2,10 @@ FROM openjdk:8-alpine
 MAINTAINER u6k.apps@gmail.com
 
 # Setup application
-COPY target/narou-crawler.jar /opt/
+RUN mkdir -p /opt/
+COPY target/narou-analyze.jar /opt/
 
 # Setup docker run setting
 EXPOSE 8080
 
-CMD ["java", "-jar", "/opt/narou-crawler.jar"]
+CMD ["java", "-jar", "/opt/narou-analyze.jar"]
