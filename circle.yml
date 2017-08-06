@@ -4,22 +4,15 @@ machine:
         - docker
 
 compile:
-    pre:
-        - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-        - docker pull u6kapps/narou-crawler-dev || true
     override:
-        - docker build -t u6kapps/narou-crawler-dev -f Dockerfile-dev .
-    post:
-        - docker push u6kapps/narou-crawler-dev
+        - docker build -t narou-analyze-dev -f Dockerfile-dev .
 
 test:
     override:
-        # before test
-        - docker run -d --name db -e POSTGRES_PASSWORD=$DB_PASS -e POSTGRES_USER=$DB_USER -e POSTGRES_DB=$DB_NAME postgres
-        # testing
-        - docker run --rm -v $HOME/.m2:/root/.m2 -v $(pwd):/var/my-app --link db:db -e NAROU_CRAWLER_DB_USER=$DB_USER -e NAROU_CRAWLER_DB_PASS=$DB_PASS -e NAROU_CRAWLER_DB_NAME=$DB_NAME -e NAROU_CRAWLER_DB_HOST=db u6kapps/narou-crawler-dev
-        # after test
+        - docker run -d --name db -e "POSTGRES_PASSWORD=db_pass" -e "POSTGRES_USER=db_user" -e "POSTGRES_DB=narou_analyze" postgres
+        - docker run --rm --name narou_analyze -v "${HOME}/.m2:/root/.m2" -v "${PWD}:/var/my-app" --link db:db -e "NAROU_CRAWLER_DB_USER=db_user" -e "NAROU_CRAWLER_DB_PASS=db_pass" -e "NAROU_CRAWLER_DB_HOST=db" -e "NAROU_CRAWLER_DB_NAME=narou_analyze" narou-analyze-dev
         - docker kill db
+        - docker build -t u6kapps/narou-analyze .
     post:
         - cp -r target/surefire-reports/* $CIRCLE_TEST_REPORTS/
         - cp -r target/* $CIRCLE_ARTIFACTS/
@@ -28,6 +21,6 @@ deployment:
     release:
         tag: /.+/
         commands:
-            - docker build -t u6kapps/narou-crawler .
-            - docker tag u6kapps/narou-crawler u6kapps/narou-crawler:$CIRCLE_TAG
-            - docker push u6kapps/narou-crawler
+            - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+            - docker tag u6kapps/narou-analyze u6kapps/narou-analyze:$CIRCLE_TAG
+            - docker push u6kapps/narou-analyze
