@@ -278,7 +278,7 @@ public class CrawlerService {
     }
 
     private String extractNCode(URL url) {
-        Pattern p = Pattern.compile("^http:\\/\\/ncode\\.syosetu\\.com\\/(\\w+)\\/$");
+        Pattern p = Pattern.compile("^http[s]{0,1}:\\/\\/ncode\\.syosetu\\.com\\/(\\w+)\\/$");
         Matcher m = p.matcher(url.toString());
         if (!m.matches()) {
             throw new RuntimeException("url not match novel url. url=" + url.toString());
