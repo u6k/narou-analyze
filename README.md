@@ -1,8 +1,8 @@
 # narou-analyze
 
-[![CircleCI](https://img.shields.io/circleci/project/github/u6k/narou-analyze.svg)](https://circleci.com/gh/u6k/narou-analyze)
+[![Travis](https://img.shields.io/travis/u6k/narou-analyze.svg)](https://travis-ci.org/u6k/narou-analyze)
+[![GitHub release](https://img.shields.io/github/release/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/releases)
 [![license](https://img.shields.io/github/license/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/blob/master/LICENSE)
-[![GitHub tag](https://img.shields.io/github/tag/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/releases)
 [![Docker Pulls](https://img.shields.io/docker/pulls/u6kapps/narou-analyze.svg)](https://hub.docker.com/r/u6kapps/narou-analyze/)
 
 「小説家になろう」をクローリングして、データを収集、分析します。
