@@ -1,11 +1,12 @@
-FROM openjdk:8-alpine
-MAINTAINER u6k.apps@gmail.com
+FROM ruby:2.6
+LABEL maintainer="u6k.apps@gmail.com"
 
-# Setup application
-RUN mkdir -p /opt/
-COPY target/narou-analyze.jar /opt/
+RUN apt-get update && \
+    apt-get -y upgrade && \
+    apt-get clean
 
-# Setup docker run setting
-EXPOSE 8080
+VOLUME /var/myapp
+WORKDIR /var/myapp
 
-CMD ["java", "-jar", "/opt/narou-analyze.jar"]
+CMD ["bash"]
+

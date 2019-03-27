@@ -1,27 +1,26 @@
-sudo: required
-language: java
+language: ruby
+cache: bundler
 
-services:
-    - docker
-
-before_install:
-    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    - sudo apt-get update
-    - sudo apt-get -y install docker-ce
+addons:
+  apt:
+    packages:
+      - docker-ce
 
 script:
-    - docker build -t narou-analyze-dev -f Dockerfile-dev .
-    - docker run -d --name db -e "POSTGRES_PASSWORD=db_pass" -e "POSTGRES_USER=db_user" -e "POSTGRES_DB=narou_analyze" postgres
-    - docker run --rm --name narou_analyze -v "${HOME}/.m2:/root/.m2" -v "${PWD}:/var/my-app" --link db:db -e "NAROU_CRAWLER_DB_USER=db_user" -e "NAROU_CRAWLER_DB_PASS=db_pass" -e "NAROU_CRAWLER_DB_HOST=db" -e "NAROU_CRAWLER_DB_NAME=narou_analyze" narou-analyze-dev
-    - docker kill db
-    - docker build -t u6kapps/narou-analyze .
+  - docker-compose build
+  - docker-compose run app
 
 after_success:
-    - if [ -n "$TRAVIS_TAG" ]; then
-          docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
-          docker tag u6kapps/narou-analyze u6kapps/narou-analyze:$TRAVIS_TAG;
-          docker push u6kapps/narou-analyze;
-      else
-          echo skip docker push;
-      fi
+  - if [ -n "$TRAVIS_TAG" ]; then
+      docker build -t u6kapps/narou-analyze -f Dockerfile.production .;
+      docker login -u "$DOCKER_USER" -p "$DOCKER_PASS";
+      docker tag u6kapps/narou-analyze u6kapps/narou-analyze:$TRAVIS_TAG;
+      docker push u6kapps/narou-analyze;
+    else echo
+      skip docker push;
+    fi
+
+notifications:
+  slack:
+    secure: XOEOgKKZsgreDHr1bNGL8I+ixP9rpm4ypp30VrykP97cyFE1+7w/dB0BwbHV1gR/VdarJLOhk0grgzBq/YhMcGbkl4bkm+77iHlArcq9BaLBBuVCCW04QXQxvG3phKsLkH7k6BJDhuHjB0SItGVV/HxHtTNJl6eeke7bDOk/6ip695ZGtRRB2gRlnt/aH75Y0m5Bng/FyNR0HUKSjKYRZmR8FuURo8CohLeP9CtYwqaIWGyyjaTnHyHhI6/VPWtz31kMw1oU9tXmpCOHZRYbu8XhtWCxuF6HBYyBbW388owMQw8EfGTfCPapEPLowcr3T9rnDhIQR8+RzNRPyehg8Ljur2vq+fSr/KYj+nDv5n/jHdT+ekF1f9LPxVIr3Q5F3MDXQPFls6VmlIKCNzxgP3srxOJfR3xpYZLov1Xwma7zH6Dghoej3+A/u9M9cbUeydafM790JUstMpIZQWaKLmkhfG8oCW0gNyMNxzXpd50jcOLSluF6zzYiOmLVVn1QZ5DF5vE5mXSQDwjIadeRDkNmnNIWTMgwyeiMW7EJppy0ZdUkd8CNXP5Y7C4F9fcglNaFJBlaXSNxS42g1CHs/fIftEuK4nTXNHdY1CqH0m50RyPo7wto7fPhORw84eN6hPLKlcJnnnBr3jhCep2PjQ3zTm8Apb0nlfCmCMgO8sw=
+
