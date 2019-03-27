@@ -1,0 +1,6 @@
+#!/usr/bin/env_ruby
+
+require "narou_analyze"
+
+NarouAnalyze::CLI.start(ARGV)
+
