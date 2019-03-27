@@ -1,174 +1,69 @@
-# narou-analyze
+# 小説家になろう解析 _(narou-analyze)_
 
-[![Travis](https://img.shields.io/travis/u6k/narou-analyze.svg)](https://travis-ci.org/u6k/narou-analyze)
-[![GitHub release](https://img.shields.io/github/release/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/releases)
-[![license](https://img.shields.io/github/license/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/blob/master/LICENSE)
-[![Docker Pulls](https://img.shields.io/docker/pulls/u6kapps/narou-analyze.svg)](https://hub.docker.com/r/u6kapps/narou-analyze/)
+[![Travis](https://img.shields.io/travis/u6k/narou-analyze.svg)](https://travis-ci.org/u6k/narou-analyze) [![license](https://img.shields.io/github/license/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/blob/master/LICENSE) [![GitHub release](https://img.shields.io/github/release/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/releases) [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme) [![WebSite](https://img.shields.io/website-up-down-green-red/https/shields.io.svg?label=u6k.Redmine)](https://redmine.u6k.me/projects/narou-analyze)
 
-「小説家になろう」をクローリングして、データを収集、分析します。
+> 「小説家になろう」の全小説データをダウンロードして、別用途で使用できるようにします
 
-## Requirement
+__Table of Contents__
 
-- Docker
+- [Install](#Install)
+- [Usage](#Usage)
+- [Other](#Other)
+- [API](#API)
+- [Maintainer](#Maintainer)
+- [Contributing](#Contributing)
+- [License](#License)
+
+## Install
+
+Rubyを使用します。
 
 ```
-$ docker version
-Client:
- Version:      1.12.0
- API version:  1.24
- Go version:   go1.6.3
- Git commit:   8eab29e
- Built:        Thu Jul 28 23:54:00 2016
- OS/Arch:      windows/amd64
+$ ruby --version
+ruby 2.6.0p0 (2018-12-25 revision 66547) [x86_64-linux]
+```
 
-Server:
- Version:      17.03.0-ce
- API version:  1.26
- Go version:   go1.7.5
- Git commit:   3a232c8
- Built:        Tue Feb 28 07:52:04 2017
- OS/Arch:      linux/amd64
+`Gemfile`に次を追加して、`bundle install`でインストールします。
+
+```
+gem 'crawline', :git => 'https://github.com/u6k/crawline.git'
+gem 'narou_analyze', :git => 'https://github.com/u6k/narou-analyze.git'
 ```
 
 ## Usage
 
-### 検索ページから全小説のURLを取得
-
 ```
-curl -v \
-    -X POST \
-    -H "Content-Type: application/json" \
-    -d '{"searchDate":"2017-04-10"}' \
-    https://crawler.narou-analyze.u6k.me/api/novels/
+$ narou-analyze help
+Commands:
+  narou-analyze help [COMMAND]  # Describe available commands or one specific command
+  narou-analyze version         # Display version
 ```
 
-- searchDate
-    - 「小説家になろう」検索画面で入力する検索日付
-    - 指定日付に更新された小説をインデックスする
+## Other
 
-### 小説のメタデータをダウンロード
+最新の情報は、 [Wiki - narou-analyze - u6k.Redmine](https://redmine.u6k.me/projects/narou-analyze/wiki) を参照してください。
 
-```
-curl -v \
-    -X POST \
-    https://crawler.narou-analyze.u6k.me/api/novels/n1234ab/meta/download
-```
+- [基本情報](https://redmine.u6k.me/projects/narou-analyze/wiki/%E5%9F%BA%E6%9C%AC%E6%83%85%E5%A0%B1)
+- [リリース手順](https://redmine.u6k.me/projects/narou-analyze/wiki/%E3%83%AA%E3%83%AA%E3%83%BC%E3%82%B9%E6%89%8B%E9%A0%86)
 
-### 小説のメタデータを解析
+## API
 
-```
-curl -v \
-    -X POST \
-    https://crawler.narou-analyze.u6k.me/api/novels/n1234ab/meta/
-```
+[APIリファレンス](https://u6k.github.io/narou-analyze/) を参照してください。
 
-### 小説の内容をダウンロード
+## Maintainer
 
-```
-curl -v \
-    -X POST \
-    https://crawler.narou-analyze.u6k.me/api/novels/n1234ab/content/download
-```
+- u6k
+    - [Twitter](https://twitter.com/u6k_yu1)
+    - [GitHub](https://github.com/u6k)
+    - [Blog](https://blog.u6k.me/)
 
-### 小説の内容を解析
+## Contributing
 
-```
-curl -v \
-    -X POST \
-    https://crawler.narou-analyze.u6k.me/api/novels/n1234ab/content/
-```
+当プロジェクトに興味を持っていただき、ありがとうございます。[新しいチケットを起票](https://redmine.u6k.me/projects/narou-analyze/issues/new)していただくか、プルリクエストをサブミットしていただけると幸いです。
 
-## Installation
-
-### 開発環境を構築
-
-開発用Dockerイメージをビルドします。
-
-```
-docker build -t narou-analyze-dev -f Dockerfile-dev .
-```
-
-Eclipseプロジェクトを作成します。
-
-```
-docker run \
-    --rm \
-    -v "${HOME}/.m2:/root/.m2" \
-    -v "${PWD}:/var/my-app" \
-    narou-analyze-dev mvn eclipse:eclipse
-```
-
-### 開発環境でアプリケーションを実行
-
-PostgreSQLコンテナを起動します。
-
-```
-docker run \
-    -d \
-    --name db \
-    -e "POSTGRES_PASSWORD=db_pass" \
-    -e "POSTGRES_USER=db_user" \
-    -e "POSTGRES_DB=narou_analyze" \
-    postgres
-```
-
-開発用コンテナを起動します。
-
-```
-docker run \
-    --rm \
-    --name narou_analyze \
-    -v "${HOME}/.m2:/root/.m2" \
-    -v "${PWD}:/var/my-app" \
-    --link db:db \
-    -e "NAROU_CRAWLER_DB_USER=db_user" \
-    -e "NAROU_CRAWLER_DB_PASS=db_pass" \
-    -e "NAROU_CRAWLER_DB_HOST=db" \
-    -e "NAROU_CRAWLER_DB_NAME=narou_analyze" \
-    -p 8080:8080 \
-    narou-analyze-dev mvn spring-boot:run
-```
-
-### ビルド
-
-PostgreSQLコンテナを起動します。コマンドは上記と同じ。
-
-テスト実行し、jarファイルをパッケージングします。
-
-```
-docker run \
-    --rm \
-    --name narou_analyze \
-    -v "${HOME}/.m2:/root/.m2" \
-    -v "${PWD}:/var/my-app" \
-    --link db:db \
-    -e "NAROU_CRAWLER_DB_USER=db_user" \
-    -e "NAROU_CRAWLER_DB_PASS=db_pass" \
-    -e "NAROU_CRAWLER_DB_HOST=db" \
-    -e "NAROU_CRAWLER_DB_NAME=narou_analyze" \
-    narou-analyze-dev
-```
-
-実行用Dockerイメージをビルドします。
-
-```
-docker build -t u6kapps/narou-analyze .
-```
-
-### 実行
-
-実行用Dockerイメージを起動します。環境変数を設定する必要があることに注意。
-
-```
-$ docker-compose up -d
-```
-
-## Links
-
-- [narou-analyze - u6k.Redmine](https://redmine.u6k.me/projects/narou-analyze)
-- [u6k/narou-analyze - GitHub](https://github.com/u6k/narou-analyze)
-- [u6k.blog](http://blog.u6k.me)
+当プロジェクトは、[Contributor Covenant](https://www.contributor-covenant.org/version/1/4/code-of-conduct)に準拠します。
 
 ## License
 
-[![license](https://img.shields.io/github/license/u6k/narou-analyze.svg)](https://github.com/u6k/narou-analyze/blob/master/LICENSE)
+[MIT License](https://github.com/u6k/narou-analyze/blob/master/LICENSE)
+
