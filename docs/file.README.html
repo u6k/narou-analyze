@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; Documentation by YARD 0.9.18
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" charset="utf-8" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-E5-B0-8F-E8-AA-AC-E5-AE-B6-E3-81-AB-E3-81-AA-E3-82-8D-E3-81-86-E8-A7-A3-E6-9E-90+-28narou-analyze-29">小説家になろう解析 <em>(narou-analyze)</em></h1>
+
+<p><a href="https://travis-ci.org/u6k/narou-analyze"><img src="https://img.shields.io/travis/u6k/narou-analyze.svg"></a> <a href="https://github.com/u6k/narou-analyze/blob/master/LICENSE"><img src="https://img.shields.io/github/license/u6k/narou-analyze.svg"></a> <a href="https://github.com/u6k/narou-analyze/releases"><img src="https://img.shields.io/github/release/u6k/narou-analyze.svg"></a> <a href="https://github.com/RichardLitt/standard-readme"><img src="https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square"></a> <a href="https://redmine.u6k.me/projects/narou-analyze"><img src="https://img.shields.io/website-up-down-green-red/https/shields.io.svg?label=u6k.Redmine"></a></p>
+
+<blockquote>
+<p>「小説家になろう」の全小説データをダウンロードして、別用途で使用できるようにします</p>
+</blockquote>
+
+<p><strong>Table of Contents</strong></p>
+<ul><li>
+<p><a href="#Install">Install</a></p>
+</li><li>
+<p><a href="#Usage">Usage</a></p>
+</li><li>
+<p><a href="#Other">Other</a></p>
+</li><li>
+<p><a href="#API">API</a></p>
+</li><li>
+<p><a href="#Maintainer">Maintainer</a></p>
+</li><li>
+<p><a href="#Contributing">Contributing</a></p>
+</li><li>
+<p><a href="#License">License</a></p>
+</li></ul>
+
+<h2 id="label-Install">Install</h2>
+
+<p>Rubyを使用します。</p>
+
+<pre class="code ruby"><code class="ruby">$ ruby --version
+ruby 2.6.0p0 (2018-12-25 revision 66547) [x86_64-linux]
+</code></pre>
+
+<p><code>Gemfile</code>に次を追加して、<code>bundle install</code>でインストールします。</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>crawline</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:git</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://github.com/u6k/crawline.git</span><span class='tstring_end'>&#39;</span></span>
+<span class='id identifier rubyid_gem'>gem</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>narou_analyze</span><span class='tstring_end'>&#39;</span></span><span class='comma'>,</span> <span class='symbol'>:git</span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>https://github.com/u6k/narou-analyze.git</span><span class='tstring_end'>&#39;</span></span>
+</code></pre>
+
+<h2 id="label-Usage">Usage</h2>
+
+<pre class="code ruby"><code class="ruby">$ narou-analyze help
+Commands:
+  narou-analyze help [COMMAND]  # Describe available commands or one specific command
+  narou-analyze version         # Display version
+</code></pre>
+
+<h2 id="label-Other">Other</h2>
+
+<p>最新の情報は、 <a href="https://redmine.u6k.me/projects/narou-analyze/wiki">Wiki - narou-analyze - u6k.Redmine</a> を参照してください。</p>
+<ul><li>
+<p><a href="https://redmine.u6k.me/projects/narou-analyze/wiki/%E5%9F%BA%E6%9C%AC%E6%83%85%E5%A0%B1">基本情報</a></p>
+</li><li>
+<p><a href="https://redmine.u6k.me/projects/narou-analyze/wiki/%E3%83%AA%E3%83%AA%E3%83%BC%E3%82%B9%E6%89%8B%E9%A0%86">リリース手順</a></p>
+</li></ul>
+
+<h2 id="label-API">API</h2>
+
+<p><a href="https://u6k.github.io/narou-analyze/">APIリファレンス</a> を参照してください。</p>
+
+<h2 id="label-Maintainer">Maintainer</h2>
+<ul><li>
+<p>u6k</p>
+<ul><li>
+<p><a href="https://twitter.com/u6k_yu1">Twitter</a></p>
+</li><li>
+<p><a href="https://github.com/u6k">GitHub</a></p>
+</li><li>
+<p><a href="https://blog.u6k.me/">Blog</a></p>
+</li></ul>
+</li></ul>
+
+<h2 id="label-Contributing">Contributing</h2>
+
+<p>当プロジェクトに興味を持っていただき、ありがとうございます。<a href="https://redmine.u6k.me/projects/narou-analyze/issues/new">新しいチケットを起票</a>していただくか、プルリクエストをサブミットしていただけると幸いです。</p>
+
+<p>当プロジェクトは、<a href="https://www.contributor-covenant.org/version/1/4/code-of-conduct">Contributor Covenant</a>に準拠します。</p>
+
+<h2 id="label-License">License</h2>
+
+<p><a href="https://github.com/u6k/narou-analyze/blob/master/LICENSE">MIT License</a></p>
+</div></div>
+
+      <div id="footer">
+  Generated on Wed Mar 27 09:35:14 2019 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.18 (ruby-2.6.2).
+</div>
+
+    </div>
+  </body>
+</html>
