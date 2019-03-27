@@ -1,0 +1,9 @@
+version: '2'
+
+services:
+  app:
+    build: .
+    volumes:
+      - ".:/var/myapp"
+    command: /bin/sh -c "bundle install && rake spec"
+
